@@ -14,6 +14,8 @@ import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIss
 import { handleListComments, handleCreateComment } from "./comments/handlers.ts";
 import { handleVote } from "./votes/handlers.ts";
 import { handleGraph } from "./graph/handlers.ts";
+import { handleListCaptures, handleCreateCapture, handleGetCapture, handleUpdateCapture, handleDeleteCapture, handleListUrls } from "./captures/handlers.ts";
+import { handleUploadImage, handleDeleteImage, handleServeImage } from "./captures/images.ts";
 
 const CORS_ORIGIN = optionalEnv("CORS_ORIGIN", "http://localhost:5173");
 
@@ -115,6 +117,36 @@ async function handler(req: Request): Promise<Response> {
   // Votes route
   if (path === "/api/votes" && method === "POST") {
     return handleVote(req);
+  }
+
+  // Captures routes
+  if (path === "/api/captures" && method === "GET") {
+    return handleListCaptures(req);
+  }
+  if (path === "/api/captures" && method === "POST") {
+    return handleCreateCapture(req);
+  }
+  const captureMatch = path.match(/^\/api\/captures\/([0-9a-f-]+)$/);
+  if (captureMatch) {
+    if (method === "GET") return handleGetCapture(req);
+    if (method === "PATCH") return handleUpdateCapture(req);
+    if (method === "DELETE") return handleDeleteCapture(req);
+  }
+  const captureImagesMatch = path.match(/^\/api\/captures\/([0-9a-f-]+)\/images$/);
+  if (captureImagesMatch && method === "POST") {
+    return handleUploadImage(req);
+  }
+  const captureImageMatch = path.match(/^\/api\/captures\/([0-9a-f-]+)\/images\/([0-9a-f-]+)$/);
+  if (captureImageMatch && method === "DELETE") {
+    return handleDeleteImage(req);
+  }
+  if (path.startsWith("/images/") && method === "GET") {
+    return handleServeImage(req);
+  }
+
+  // URLs route
+  if (path === "/api/urls" && method === "GET") {
+    return handleListUrls(req);
   }
 
   // Graph route

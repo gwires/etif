@@ -30,12 +30,12 @@
 
 ## Milestone 4: Captures API ([spec](milestones/MILESTONE-004.md))
 
-- [ ] Captures CRUD endpoints (list, create, get, update, delete)
-- [ ] URL extraction from markdown fields (`extract_urls.ts`)
-- [ ] Image upload (multiple, with captions, validation)
-- [ ] GET /api/urls aggregated view
-- [ ] Wire routes into main.ts
-- [ ] Tests pass
+- [x] Captures CRUD endpoints (list, create, get, update, delete)
+- [x] URL extraction from markdown fields (`extract_urls.ts`)
+- [x] Image upload (multiple, with captions, validation)
+- [x] GET /api/urls aggregated view
+- [x] Wire routes into main.ts
+- [x] Tests pass
 
 ## Milestone 5: Capture Frontend ([spec](milestones/MILESTONE-005.md))
 

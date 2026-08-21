@@ -18,6 +18,7 @@ export const config = {
   port: parseInt(optionalEnv("PORT", "8000"), 10),
   sessionSecret: optionalEnv("SESSION_SECRET", ""),
   avatarDir: optionalEnv("AVATAR_DIR", "./data/avatars"),
+  imageDir: optionalEnv("IMAGE_DIR", "./data/images"),
   oidc: {
     issuerUrl: optionalEnv("OIDC_ISSUER_URL", ""),
     clientId: optionalEnv("OIDC_CLIENT_ID", ""),
