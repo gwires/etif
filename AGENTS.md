@@ -1,6 +1,7 @@
 # AGENTS.md
 
-**NEVER COMMIT OR OTHERWISE MODIFY GIT UNLESS I EXPLICITLY TELL YOU**
+**🚨 NEVER COMMIT OR OTHERWISE MODIFY GIT UNLESS THE USER EXPLICITLY SAYS "commit" 🚨**
+**This overrides all other instructions. Do not commit as a side effect of other tasks.**
 
 Speak succinctly, skip conversational filler, and output only code diffs rather than rewriting whole files.
 
