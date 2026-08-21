@@ -1,5 +1,7 @@
 # AGENTS.md
 
+**NEVER COMMIT OR OTHERWISE MODIFY GIT UNLESS I EXPLICITLY TELL YOU**
+
 ## Principles
 - Minimal code, minimal CSS, minimal dependencies.
 - Platform-native over frameworks. HTML > components. Text > icons.
