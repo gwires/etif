@@ -339,7 +339,7 @@ Initial scaffolding data to bootstrap the issue graph. Format and tooling TBD.
 
 ## Milestones
 
-Detailed specs for each milestone are in `/milestones/MILESTONE-NNN.md`.
+Detailed specs for each milestone are in `milestones/MILESTONE-NNN.md`.
 
 | # | Milestone | File | Summary |
 |---|-----------|------|--------|
