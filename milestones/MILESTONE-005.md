@@ -20,92 +20,82 @@ Update config as needed for new routes and API endpoints.
 ### Shared Styles (`capture/src/app.css`)
 Single small CSS file. Minimal reset, typography, form styles, card layout. No frameworks.
 
-## Deliverables
+## Session Tasks
 
-### 1. Auth Pages
-Reuse from approach01, adapt for new schema:
-- `/signup` — signup form + captcha
-- `/login` — login form
-- `/logout` — destroy session
-- Auth state management (`src/lib/auth.ts`)
+Each task is one session. Complete one at a time, run tests/checks, then stop.
 
-### 2. Quick-Capture Smart Field
+### Task 1: API Client + Types
+**Files:** `capture/src/lib/api.ts`, `capture/src/lib/auth.ts`
 
-Single input at top of capture form. Behavior:
+- Replace old Issue/Relation/Comment types with new types: `Capture`, `CaptureImage`, `CaptureUrl`, `ProfileUser`
+- Update `User` type to include `display_name`, `about`, `avatar_path`
+- Add `upload(path, formData)` method to ApiClient for multipart image upload
+- Update `auth.ts` to use new User shape
+- Auth pages (`login`, `signup`, `logout`) already work — verify they still compile with updated types
 
-| Input | Detection | Action |
-|-------|-----------|--------|
-| URL pasted | Regex `https?://...` | Fetch title via backend or `<title>` parse → fill title field, set status=`***`, append URL to notes |
-| Image pasted/dropped | File/blob on paste/drop event | Trigger image upload flow, set status=`***`, focus title field |
-| Plain text typed + Enter | Fallback | Fill title with text, set status=`***` |
+### Task 2: Layout + Navigation + CSS Foundation
+**Files:** `capture/src/routes/+layout.svelte`, `capture/src/app.css`
 
-Frontend-only orchestration. The URL→title fetch can use a simple backend endpoint or be done client-side with a CORS-friendly approach.
+- Update nav links: New, Recent, URLs, Profile (with display_name/avatar), Logout
+- Mobile-responsive hamburger menu (already partially done)
+- Add CSS to `app.css`: status badges (star colors), form grid, image thumbnails, filter tabs, URL table, profile avatar, smart field styling
+- Root `+page.svelte` redirect stays as-is
 
-### 3. Capture Form (`/capture`)
+### Task 3: Capture Form + Quick-Capture Smart Field
+**File:** `capture/src/routes/capture/+page.svelte`
 
-Fields:
-- **Quick-capture input** (smart field described above)
-- **Title** (text, required) — pre-filled by quick-capture
-- **Status** (selector: `***` / `**` / `*` / done) — defaults to `***`
-- **What** (textarea, markdown)
-- **Where** (textarea, markdown)
-- **Why** (textarea, markdown)
-- **When** (textarea, markdown)
-- **Notes** (textarea, markdown)
-- **Images** (upload area, multiple files, drag+drop or click)
-- Submit button → POST /api/captures
+- Rewrite from issue-based to capture schema
+- Quick-capture smart field at top:
+  - URL paste → fill title with URL, set status=`***`
+  - Image paste/drop → store files for upload after create, focus title
+  - Plain text + Enter → fill title, set status=`***`
+- Fields: title (text), status (select: `***`/`**`/`*`/done), what_text, where_text, why_text, when_text, notes (all textarea)
+- Image upload area (drag+drop, multiple files, preview thumbnails)
+- Submit: POST /api/captures → get back capture ID → upload images → redirect to /capture/recent
+- No markdown preview (keep it simple)
 
-On success: redirect to `/capture/recent`.
+### Task 4: Recent Captures Feed
+**File:** `capture/src/routes/capture/recent/+page.svelte`
 
-### 4. Recent Captures Feed (`/capture/recent`)
-
-- List of user's captures, sorted by created_at DESC
-- Each entry: star-prefixed title (based on status), what excerpt (first 150 chars), created_at, image count, URL count
+- Rewrite to use captures API instead of issues API
+- List captures sorted by created_at DESC
+- Each entry: status stars + title, what_text excerpt (150 chars), date, image count, URL count
+- Status filter tabs (all / `***` / `**` / `*` / done)
+- Pagination (limit/offset)
 - Link to `/i/:id/edit`
-- Filter by status (tabs or dropdown)
+
+### Task 5: Edit Page
+**File:** `capture/src/routes/i/[id]/edit/+page.svelte`
+
+- Rewrite to use captures API
+- Pre-populated form (same fields as capture form, no quick-capture field)
+- Existing images displayed as thumbnails with delete buttons
+- Add new images section
+- Submit: PATCH /api/captures/:id
+- Image delete: DELETE /api/captures/:id/images/:img_id
+- Image add: POST /api/captures/:id/images
+
+### Task 6: URLs View
+**File:** `capture/src/routes/urls/+page.svelte` (new)
+
+- GET /api/urls on mount
+- Table: URL (clickable, new tab), capture title with stars (links to edit), date
+- Sorted by date DESC
 - Pagination
 
-### 5. Edit Page (`/i/[id]/edit`)
+### Task 7: Profile Page
+**File:** `capture/src/routes/profile/+page.svelte` (new)
 
-Same form as capture but pre-populated with existing data.
-PATCH /api/captures/:id on submit.
-Image management: show existing images with delete buttons, add new ones.
+- Load current profile from /api/auth/me on mount
+- Display name input, about textarea
+- Avatar: preview current, upload new (POST /api/auth/avatar), delete
+- Save button: PATCH /api/auth/profile
+- On save success, refresh auth state
 
-### 6. URLs View (`/urls`)
-
-Table of all URLs across user's captures:
-- Columns: URL, capture title (with stars), date
-- Sorted by date DESC
-- Clickable URLs (open in new tab)
-- Clickable capture titles (go to edit page)
-
-### 7. Profile Page (`/profile`)
-
-- Display name input
-- About textarea (markdown)
-- Avatar upload (single image, preview, delete button)
-- Save button → PATCH /api/auth/profile (+ avatar upload separate)
-
-### 8. Layout & Navigation
-
-`src/routes/+layout.svelte`:
-- Nav: site name, Capture link, Recent link, URLs link, profile avatar+name, logout
-- Main content area
-- Mobile-responsive basic CSS
-
-### 9. API Client (`src/lib/api.ts`)
-Thin wrapper around fetch. Handles base URL, credentials, JSON parsing.
-Methods: get, post, patch, delete, upload (multipart).
-
-## Verification
-```bash
-cd capture && pnpm dev
-# Visit http://localhost:5173/signup
-# Create account, create capture via quick-capture URL paste
-# Verify it appears in recent feed
-# Check /urls shows extracted URL
-# Edit profile, upload avatar
-```
+### Task 8: Verify + Fix
+- Run `scripts/run.sh bash -c 'cd capture && pnpm check'`
+- Fix any type errors or warnings
+- Confirm all routes render without console errors
 
 ## Constraints
 - Server-rendered pages wherever possible

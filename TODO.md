@@ -39,12 +39,11 @@
 
 ## Milestone 5: Capture Frontend ([spec](milestones/MILESTONE-005.md))
 
-- [ ] Auth pages (reuse/adapt from approach01)
-- [ ] Quick-capture smart field (URL→title, image→attach, text→title)
-- [ ] Capture form (title, status selector, what_text, where_text, why_text, when_text, notes, images)
-- [ ] Recent captures feed (with status filter)
-- [ ] Edit page (pre-populated form, image management)
-- [ ] URLs view (table of all user's URLs)
-- [ ] Profile page (display_name, about, avatar)
-- [ ] Layout & navigation
-- [ ] Verify end-to-end flow
+- [ ] Task 1: API client + types (`api.ts`, `auth.ts`)
+- [ ] Task 2: Layout + nav + CSS foundation
+- [ ] Task 3: Capture form + quick-capture smart field
+- [ ] Task 4: Recent captures feed
+- [ ] Task 5: Edit page (with image management)
+- [ ] Task 6: URLs view
+- [ ] Task 7: Profile page
+- [ ] Task 8: Verify + fix type errors
