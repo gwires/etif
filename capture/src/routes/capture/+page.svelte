@@ -4,7 +4,6 @@
 
 	let title = $state('');
 	let body = $state('');
-	let severity = $state('');
 	let error = $state('');
 	let loading = $state(false);
 	let preview = $state(false);
@@ -32,7 +31,6 @@
 				title,
 				body,
 				type: 'draft',
-				severity: severity ? Number(severity) : null
 			});
 			goto(`/i/${issue.id}/edit`);
 		} catch (err) {
@@ -76,16 +74,6 @@
 	<small>
 		Supports: <code>[text](url)</code> · <code>[video:url]</code> · <code>[location:url]</code> · markdown basics
 	</small>
-
-	<label for="severity">Severity (optional)</label>
-	<select id="severity" bind:value={severity}>
-		<option value="">—</option>
-		<option value="1">1 — Low</option>
-		<option value="2">2 — Minor</option>
-		<option value="3">3 — Moderate</option>
-		<option value="4">4 — High</option>
-		<option value="5">5 — Critical</option>
-	</select>
 
 	{#if error}<p class="error">{error}</p>{/if}
 
