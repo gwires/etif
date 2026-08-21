@@ -45,7 +45,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 3h: Router wiring + verification
 - [ ] Milestone 4: Core API ([spec](milestones/MILESTONE-004.md))
   - [x] 4a: Issues CRUD (`/api/issues/`)
-  - [ ] 4b: Relations CRUD (`/api/relations/`)
+  - [x] 4b: Relations CRUD (`/api/relations/`)
   - [ ] 4c: Regions (`/api/regions/`)
   - [ ] 4d: Comments (`/api/comments/`)
   - [ ] 4e: Votes (`/api/votes/`)

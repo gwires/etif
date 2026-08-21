@@ -7,6 +7,7 @@ import { handleSignup } from "./auth/signup.ts";
 import { handleLogin } from "./auth/login.ts";
 import { handleMe, handleLogout } from "./auth/middleware.ts";
 import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue } from "./issues/handlers.ts";
+import { handleGetRelations, handleCreateRelation, handleUpdateRelation, handleDeleteRelation } from "./relations/handlers.ts";
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -42,6 +43,18 @@ async function handler(req: Request): Promise<Response> {
   if (issueMatch) {
     if (method === "GET") return handleGetIssue(req, issueMatch[1]);
     if (method === "PATCH") return handleUpdateIssue(req);
+  }
+
+  // Relations routes
+  const issueRelationsMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)\/relations$/);
+  if (issueRelationsMatch) {
+    if (method === "GET") return handleGetRelations(req, issueRelationsMatch[1]);
+    if (method === "POST") return handleCreateRelation(req);
+  }
+  const relationMatch = path.match(/^\/api\/relations\/([0-9a-f-]+)$/);
+  if (relationMatch) {
+    if (method === "PATCH") return handleUpdateRelation(req);
+    if (method === "DELETE") return handleDeleteRelation(req);
   }
 
   // Health check
