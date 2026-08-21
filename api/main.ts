@@ -6,6 +6,7 @@ import { generateCaptcha } from "./auth/captcha.ts";
 import { handleSignup } from "./auth/signup.ts";
 import { handleLogin } from "./auth/login.ts";
 import { handleMe, handleLogout } from "./auth/middleware.ts";
+import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue } from "./issues/handlers.ts";
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -28,6 +29,19 @@ async function handler(req: Request): Promise<Response> {
   }
   if (path === "/api/auth/logout" && method === "DELETE") {
     return handleLogout(req);
+  }
+
+  // Issues routes
+  if (path === "/api/issues" && method === "GET") {
+    return handleListIssues(req);
+  }
+  if (path === "/api/issues" && method === "POST") {
+    return handleCreateIssue(req);
+  }
+  const issueMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)$/);
+  if (issueMatch) {
+    if (method === "GET") return handleGetIssue(req, issueMatch[1]);
+    if (method === "PATCH") return handleUpdateIssue(req);
   }
 
   // Health check
