@@ -73,7 +73,7 @@ Minimalism is paramount!
 - Location URLs → coordinates → S2 cells → regions.
 - Issue versions for community refinement and voting.
 - Multi-region via S2 cells. Relations form a directed graph with markdown bodies.
-- Everything is public. No private content.
+- All data is public once authenticated. All API endpoints require authentication (session cookie) to prevent scraper/agent abuse. Unauthenticated public web pages may be added later.
 
 ## Workflow
 - Always run tool commands via the dev shell: `scripts/run.sh deno check api/main.ts`. Never call `deno`, `pnpm`, `dbmate` etc. outside the shell.
