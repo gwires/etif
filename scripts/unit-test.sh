@@ -20,10 +20,10 @@ if [ -z "$TEST_FILES" ]; then
 fi
 
 if [ "$VERBOSE" = "--verbose" ]; then
-  deno test --allow-net --allow-env --allow-read $TEST_FILES
+  deno test --allow-net --allow-env --allow-read --allow-write $TEST_FILES
 else
   # TAP reporter gives structured pass/fail lines.
   # Filter out download/caching noise, keep only TAP protocol output.
-  deno test --reporter=tap --allow-net --allow-env --allow-read $TEST_FILES 2>&1 \
+  deno test --reporter=tap --allow-net --allow-env --allow-read --allow-write $TEST_FILES 2>&1 \
     | grep -vE '^\[0m' | grep -vE '^Download' | grep -vE '^$' || true
 fi

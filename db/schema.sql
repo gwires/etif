@@ -1,4 +1,4 @@
-\restrict acZRExzKTqc5dETHc4lvBxY8atBeF2GUxZUe3Ojp4jcGg7AYGpjZeGvq0mtDeIJ
+\restrict stUCuyOMHDod1gQZg7DnV1oikeD2cl9X3Nip8ErSSugR08zeOfCH7x7mMANKijj
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -175,6 +175,9 @@ CREATE TABLE public.users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     username text NOT NULL,
     password_hash text,
+    display_name text,
+    about text,
+    avatar_path text,
     oidc_sub text,
     oidc_issuer text,
     created_at timestamp with time zone DEFAULT now() NOT NULL
@@ -345,14 +348,14 @@ ALTER TABLE ONLY public.captures
 --
 
 ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+    ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict acZRExzKTqc5dETHc4lvBxY8atBeF2GUxZUe3Ojp4jcGg7AYGpjZeGvq0mtDeIJ
+\unrestrict stUCuyOMHDod1gQZg7DnV1oikeD2cl9X3Nip8ErSSugR08zeOfCH7x7mMANKijj
 
 
 --
@@ -363,14 +366,4 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('001'),
     ('002'),
     ('003'),
-    ('004'),
-    ('005'),
-    ('006'),
-    ('007'),
-    ('008'),
-    ('009'),
-    ('010'),
-    ('011'),
-    ('012'),
-    ('013'),
-    ('014');
+    ('004');

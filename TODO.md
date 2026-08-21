@@ -19,13 +19,14 @@
 
 ## Milestone 3: Auth + Profile API ([spec](milestones/MILESTONE-003.md))
 
-- [ ] Adapt existing auth modules for new schema
-- [ ] Extend GET /api/auth/me with profile fields
-- [ ] Add PATCH /api/auth/profile endpoint
-- [ ] Add POST/DELETE /api/auth/avatar endpoints
-- [ ] Add GET /avatars/:filename static route
-- [ ] Wire routes into main.ts
-- [ ] Tests pass
+- [x] Adapt existing auth modules for new schema
+- [x] Extend GET /api/auth/me with profile fields
+- [x] Add PATCH /api/auth/profile endpoint
+- [x] Add POST/DELETE /api/auth/avatar endpoints
+- [x] Add GET /avatars/:filename static route
+- [x] Wire routes into main.ts
+- [x] Remove obsolete approach01 tests (issues/regions/relations/votes/graph)
+- [x] Tests pass
 
 ## Milestone 4: Captures API ([spec](milestones/MILESTONE-004.md))
 

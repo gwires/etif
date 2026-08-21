@@ -6,6 +6,8 @@ import { generateCaptcha } from "./auth/captcha.ts";
 import { handleSignup } from "./auth/signup.ts";
 import { handleLogin } from "./auth/login.ts";
 import { handleMe, handleLogout } from "./auth/middleware.ts";
+import { handleUpdateProfile } from "./auth/profile.ts";
+import { handleUploadAvatar, handleDeleteAvatar, handleServeAvatar } from "./auth/avatar.ts";
 import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue } from "./issues/handlers.ts";
 import { handleGetRelations, handleCreateRelation, handleUpdateRelation, handleDeleteRelation } from "./relations/handlers.ts";
 import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIssuesByRegion } from "./regions/handlers.ts";
@@ -50,6 +52,18 @@ async function handler(req: Request): Promise<Response> {
   }
   if (path === "/api/auth/logout" && method === "DELETE") {
     return handleLogout(req);
+  }
+  if (path === "/api/auth/profile" && method === "PATCH") {
+    return handleUpdateProfile(req);
+  }
+  if (path === "/api/auth/avatar" && method === "POST") {
+    return handleUploadAvatar(req);
+  }
+  if (path === "/api/auth/avatar" && method === "DELETE") {
+    return handleDeleteAvatar(req);
+  }
+  if (path.startsWith("/avatars/") && method === "GET") {
+    return handleServeAvatar(req);
   }
 
   // Issues routes

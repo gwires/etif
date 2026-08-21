@@ -9,6 +9,9 @@ import { queryOne } from "../db.ts";
 export interface AuthContext {
   userId: string;
   username: string;
+  displayName: string | null;
+  about: string | null;
+  avatarPath: string | null;
 }
 
 /** Extract and validate session from request. Returns auth context or null. */
@@ -20,13 +23,13 @@ export async function getAuthContext(req: Request): Promise<AuthContext | null> 
   const userId = await validateSession(token);
   if (!userId) return null;
 
-  const user = await queryOne<{ username: string }>(
-    "SELECT username FROM users WHERE id = $1",
+  const user = await queryOne<{ username: string; display_name: string | null; about: string | null; avatar_path: string | null }>(
+    "SELECT username, display_name, about, avatar_path FROM users WHERE id = $1",
     [userId],
   );
   if (!user) return null;
 
-  return { userId, username: user.username };
+  return { userId, username: user.username, displayName: user.display_name, about: user.about, avatarPath: user.avatar_path };
 }
 
 /** Middleware wrapper: rejects unauthenticated requests with 401. */
@@ -45,10 +48,18 @@ export function requireAuth(
   };
 }
 
-/** GET /api/auth/me — returns current user info. */
+/** GET /api/auth/me — returns current user info including profile fields. */
 export const handleMe = requireAuth((_req, ctx) => {
   return new Response(
-    JSON.stringify({ user: { id: ctx.userId, username: ctx.username } }),
+    JSON.stringify({
+      user: {
+        id: ctx.userId,
+        username: ctx.username,
+        display_name: ctx.displayName,
+        about: ctx.about,
+        avatar_path: ctx.avatarPath,
+      },
+    }),
     { status: STATUS_CODE.OK, headers: { "Content-Type": "application/json" } },
   );
 });

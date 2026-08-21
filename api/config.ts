@@ -17,6 +17,7 @@ export const config = {
   databaseUrl: requireEnv("DATABASE_URL"),
   port: parseInt(optionalEnv("PORT", "8000"), 10),
   sessionSecret: optionalEnv("SESSION_SECRET", ""),
+  avatarDir: optionalEnv("AVATAR_DIR", "./data/avatars"),
   oidc: {
     issuerUrl: optionalEnv("OIDC_ISSUER_URL", ""),
     clientId: optionalEnv("OIDC_CLIENT_ID", ""),
