@@ -6,13 +6,14 @@ import { closePool } from "./api/db.ts";
 
 const outDir = "export";
 
-interface User {
+interface User extends Record<string, unknown> {
   id: string;
   username: string;
+  password_hash: string | null;
   created_at: Date;
 }
 
-interface Issue {
+interface Issue extends Record<string, unknown> {
   id: string;
   title: string;
   body: string | null;
@@ -23,7 +24,7 @@ async function main() {
   await Deno.mkdir(outDir, { recursive: true });
 
   const users = await query<User>(
-    "SELECT id, username, created_at FROM users ORDER BY created_at",
+    "SELECT id, username, password_hash, created_at FROM users ORDER BY created_at",
   );
   const issues = await query<Issue>(
     "SELECT id, title, body, created_at FROM issues ORDER BY created_at",
