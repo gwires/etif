@@ -1,12 +1,46 @@
 // Main entry point for the API server.
-// Scaffolds an HTTP server; routes will be wired in subsequent tasks.
 
 import { STATUS_CODE } from "./deps.ts";
 import { config } from "./config.ts";
+import { generateCaptcha } from "./auth/captcha.ts";
+import { handleSignup } from "./auth/signup.ts";
+import { handleLogin } from "./auth/login.ts";
+import { handleMe, handleLogout } from "./auth/middleware.ts";
 
-function handler(_req: Request): Response {
-  return new Response(JSON.stringify({ status: "ok" }), {
-    status: STATUS_CODE.OK,
+async function handler(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+  const path = url.pathname;
+  const method = req.method;
+
+  // Auth routes
+  if (path === "/api/auth/captcha" && method === "GET") {
+    const captcha = await generateCaptcha();
+    return json(captcha);
+  }
+  if (path === "/api/auth/signup" && method === "POST") {
+    return handleSignup(req);
+  }
+  if (path === "/api/auth/login" && method === "POST") {
+    return handleLogin(req);
+  }
+  if (path === "/api/auth/me" && method === "GET") {
+    return handleMe(req);
+  }
+  if (path === "/api/auth/logout" && method === "DELETE") {
+    return handleLogout(req);
+  }
+
+  // Health check
+  if (path === "/api/health") {
+    return json({ status: "ok" });
+  }
+
+  return json({ error: "Not found" }, STATUS_CODE.NotFound);
+}
+
+function json(data: unknown, status: number = STATUS_CODE.OK): Response {
+  return new Response(JSON.stringify(data), {
+    status,
     headers: { "Content-Type": "application/json" },
   });
 }

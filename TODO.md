@@ -42,7 +42,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 3e: Local signup (`/api/auth/signup.ts`)
   - [x] 3f: Local login + logout + me (`/api/auth/login.ts`)
   - [~] 3g: OIDC flow (`/api/auth/oidc.ts`) — *deferred, local auth sufficient for now*
-  - [ ] 3h: Router wiring + verification
+  - [x] 3h: Router wiring + verification
 - [ ] Milestone 4: Core API ([spec](milestones/MILESTONE-004.md))
   - [ ] 4a: Issues CRUD (`/api/issues/`)
   - [ ] 4b: Relations CRUD (`/api/relations/`)
