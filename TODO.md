@@ -39,9 +39,9 @@
 
 ## Milestone 5: Capture Frontend ([spec](milestones/MILESTONE-005.md))
 
-- [ ] Task 1: API client + types (`api.ts`, `auth.ts`)
-- [ ] Task 2: Layout + nav + CSS foundation
-- [ ] Task 3: Capture form + quick-capture smart field
+- [x] Task 1: API client + types (`api.ts`, `auth.ts`)
+- [x] Task 2: Layout + nav + CSS foundation
+- [x] Task 3: Capture form + quick-capture smart field
 - [ ] Task 4: Recent captures feed
 - [ ] Task 5: Edit page (with image management)
 - [ ] Task 6: URLs view

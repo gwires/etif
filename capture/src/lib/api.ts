@@ -6,6 +6,9 @@ const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 export interface User {
 	id: string;
 	username: string;
+	display_name: string | null;
+	about: string | null;
+	avatar_path: string | null;
 }
 
 export interface CaptchaChallenge {
@@ -13,39 +16,36 @@ export interface CaptchaChallenge {
 	challenge_data: Record<string, unknown>;
 }
 
-export interface Issue {
+export interface Capture {
 	id: string;
 	title: string;
-	body: string | null;
-	type: string;
 	status: string;
-	severity: number | null;
-	created_by: string;
+	what_text: string | null;
+	where_text: string | null;
+	why_text: string | null;
+	when_text: string | null;
+	notes: string | null;
 	created_at: string;
 	updated_at: string;
 }
 
-export interface IssueListResult {
-	issues: Issue[];
-	total: number;
-	limit: number;
-	offset: number;
-}
-
-export interface Relation {
+export interface CaptureImage {
 	id: string;
-	source_id: string;
-	target_id: string;
-	relation_type: string;
+	path: string;
+	caption: string | null;
+	sort_order: number;
 	created_at: string;
 }
 
-export interface Comment {
-	id: string;
-	issue_id: string;
-	user_id: string;
-	username: string;
-	body: string;
+export interface CaptureWithImages extends Capture {
+	images: CaptureImage[];
+}
+
+export interface CaptureUrl {
+	url: string;
+	capture_title: string;
+	capture_status: string;
+	capture_id: string;
 	created_at: string;
 }
 
@@ -87,6 +87,19 @@ class ApiClient {
 
 	del<T>(path: string) {
 		return this.request<T>('DELETE', path);
+	}
+
+	async upload<T>(path: string, formData: FormData): Promise<T> {
+		const res = await fetch(`${BASE}${path}`, {
+			method: 'POST',
+			credentials: 'include',
+			body: formData,
+		});
+		const data = await res.json();
+		if (!res.ok) {
+			throw new Error((data as ApiError).error ?? `HTTP ${res.status}`);
+		}
+		return data as T;
 	}
 }
 

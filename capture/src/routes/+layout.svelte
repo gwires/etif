@@ -40,8 +40,12 @@
 		<div class="nav-links" class:open={menuOpen}>
 			<a href="/capture">New</a>
 			<a href="/capture/recent">Recent</a>
+			<a href="/urls">URLs</a>
 			{#if $user}
-				<span class="nav-user">{$user.username}</span>
+				<a href="/profile" class="nav-profile">
+					{#if $user.avatar_path}<img src="/avatars/{$user.avatar_path}" alt="" class="nav-avatar" />{/if}
+					<span>{$user.display_name || $user.username}</span>
+				</a>
 				<form method="POST" action="/logout">
 					<button type="submit">Logout</button>
 				</form>
