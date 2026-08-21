@@ -9,7 +9,7 @@ function requireEnv(name: string): string {
   return value;
 }
 
-function optionalEnv(name: string, fallback: string): string {
+export function optionalEnv(name: string, fallback: string): string {
   return Deno.env.get(name) ?? fallback;
 }
 

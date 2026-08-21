@@ -1,7 +1,7 @@
 // Main entry point for the API server.
 
 import { STATUS_CODE } from "./deps.ts";
-import { config } from "./config.ts";
+import { config, optionalEnv } from "./config.ts";
 import { generateCaptcha } from "./auth/captcha.ts";
 import { handleSignup } from "./auth/signup.ts";
 import { handleLogin } from "./auth/login.ts";
@@ -12,6 +12,22 @@ import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIss
 import { handleListComments, handleCreateComment } from "./comments/handlers.ts";
 import { handleVote } from "./votes/handlers.ts";
 import { handleGraph } from "./graph/handlers.ts";
+
+const CORS_ORIGIN = optionalEnv("CORS_ORIGIN", "http://localhost:5173");
+
+function corsHeaders(): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin": CORS_ORIGIN,
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+}
+
+function withCors(res: Response): Response {
+  for (const [k, v] of Object.entries(corsHeaders())) res.headers.set(k, v);
+  return res;
+}
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -108,4 +124,10 @@ function json(data: unknown, status: number = STATUS_CODE.OK): Response {
 }
 
 console.log(`API server listening on http://localhost:${config.port}`);
-Deno.serve({ port: config.port }, handler);
+Deno.serve({ port: config.port }, async (req) => {
+  if (req.method === "OPTIONS") {
+    return withCors(new Response(null, { status: 204 }));
+  }
+  const res = await handler(req);
+  return withCors(res);
+});
