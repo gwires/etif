@@ -77,12 +77,21 @@ Minimalism is paramount!
 - All data is public once authenticated. All API endpoints require authentication (session cookie) to prevent scraper/agent abuse. Unauthenticated public web pages may be added later.
 
 ## Workflow
-- Always run tool commands via the dev shell: `scripts/run.sh deno check api/main.ts`. Never call `deno`, `pnpm`, `dbmate` etc. outside the shell.
-- Never go straight into code modifications. Write out a conceptual plan first and get approval before implementing.
-- Output diffs, not full file rewrites.
-- Never commit without explicit instruction.
-- Test migrations on empty DB before proceeding.
-- Build incrementally. Verify each layer before adding the next.
+
+**🚨 PLAN-BEFORE-CODE IS MANDATORY — NOT OPTIONAL 🚨**
+**You MUST present a plan and receive explicit approval BEFORE making ANY code or file changes whatsoever. This applies to all modifications without exception: planned tasks, bug fixes, refactors, tweaks, corrections, deviations from the current flow, or anything else. No change is too small to skip this step. "continue" means "show me the plan for the next task", not "implement it".**
+
+1. **Plan first.** Before ANY implementation, write a short plan describing:
+   - What will change (files, components, behavior)
+   - Why (which task/spec requirement this addresses)
+   - Any trade-offs or decisions made
+2. **Stop and wait.** Do NOT proceed until the user explicitly approves (e.g., "go", "approved", "looks good", "do it"). Silence or ambiguity is NOT approval.
+3. **Then implement.** Only after approval, make the changes.
+4. Always run tool commands via the dev shell: `scripts/run.sh deno check api/main.ts`. Never call `deno`, `pnpm`, `dbmate` etc. outside the shell.
+5. Output diffs, not full file rewrites.
+6. Never commit without explicit instruction.
+7. Test migrations on empty DB before proceeding.
+8. Build incrementally. Verify each layer before adding the next.
 
 ### Task Tracking Protocol
 
