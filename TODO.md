@@ -60,7 +60,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
 - [~] Milestone 10: Data dumps ([spec](milestones/MILESTONE-010.md)) — *deferred*
 - [ ] Milestone 11: Capture frontend ([spec](milestones/MILESTONE-011.md)) — *citation features deferred until M5 lands*
   - [x] 11a: Scaffold + config (SvelteKit skeleton-typescript, adapter-node)
-  - [ ] 11b: API client (`src/lib/api.ts`)
+  - [x] 11b: API client (`src/lib/api.ts`)
   - [ ] 11c: Auth state management (`src/lib/auth.ts`)
   - [ ] 11d: Auth pages (signup, login, logout)
   - [ ] 11e: Layout & navigation (`+layout.svelte`, `app.css`)
