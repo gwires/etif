@@ -19,14 +19,19 @@ function json(data: unknown, status: number = STATUS_CODE.OK): Response {
   });
 }
 
-/** GET /api/issues/:id/relations — list incoming + outgoing relations */
-export async function handleGetRelations(req: Request, issueId: string): Promise<Response> {
+/** GET /api/issues/:id/relations — list incoming + outgoing relations (auth required) */
+export const handleGetRelations = requireAuth(async (req: Request, _ctx: AuthContext) => {
+  const url = new URL(req.url);
+  const parts = url.pathname.split("/");
+  // /api/issues/:id/relations → parts[3] is the issue id
+  const issueId = parts[3];
+
   const exists = await issueExists(issueId);
   if (!exists) return json({ error: "Not found" }, STATUS_CODE.NotFound);
 
   const relations = await getRelationsForIssue(issueId);
   return json(relations);
-}
+});
 
 /** POST /api/issues/:id/relations — create a relation (auth required) */
 export const handleCreateRelation = requireAuth(async (req: Request, _ctx: AuthContext) => {

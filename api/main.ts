@@ -42,14 +42,14 @@ async function handler(req: Request): Promise<Response> {
   }
   const issueMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)$/);
   if (issueMatch) {
-    if (method === "GET") return handleGetIssue(req, issueMatch[1]);
+    if (method === "GET") return handleGetIssue(req);
     if (method === "PATCH") return handleUpdateIssue(req);
   }
 
   // Relations routes
   const issueRelationsMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)\/relations$/);
   if (issueRelationsMatch) {
-    if (method === "GET") return handleGetRelations(req, issueRelationsMatch[1]);
+    if (method === "GET") return handleGetRelations(req);
     if (method === "POST") return handleCreateRelation(req);
   }
   const relationMatch = path.match(/^\/api\/relations\/([0-9a-f-]+)$/);

@@ -154,10 +154,16 @@ describe("Relations API", { sanitizeOps: false, sanitizeResources: false }, () =
     assertEquals(res.status, 404);
   });
 
-  it("gets relations for an issue", async () => {
+  it("rejects unauthenticated GET relations", async () => {
     const res = await handleGetRelations(
       makeRequest(`/api/issues/${issue1Id}/relations`),
-      issue1Id,
+    );
+    assertEquals(res.status, 401);
+  });
+
+  it("gets relations for an issue", async () => {
+    const res = await handleGetRelations(
+      makeRequest(`/api/issues/${issue1Id}/relations`, { cookie }),
     );
     assertEquals(res.status, 200);
     const data = await res.json();
@@ -171,8 +177,7 @@ describe("Relations API", { sanitizeOps: false, sanitizeResources: false }, () =
 
   it("shows incoming relations on target issue", async () => {
     const res = await handleGetRelations(
-      makeRequest(`/api/issues/${issue2Id}/relations`),
-      issue2Id,
+      makeRequest(`/api/issues/${issue2Id}/relations`, { cookie }),
     );
     const data = await res.json();
     assertEquals(data.incoming.length, 1);
@@ -183,8 +188,7 @@ describe("Relations API", { sanitizeOps: false, sanitizeResources: false }, () =
   it("returns 404 for relations on nonexistent issue", async () => {
     const fakeId = "00000000-0000-0000-0000-000000000000";
     const res = await handleGetRelations(
-      makeRequest(`/api/issues/${fakeId}/relations`),
-      fakeId,
+      makeRequest(`/api/issues/${fakeId}/relations`, { cookie }),
     );
     assertEquals(res.status, 404);
   });
@@ -231,8 +235,7 @@ describe("Relations API", { sanitizeOps: false, sanitizeResources: false }, () =
 
   it("confirms relation is gone after delete", async () => {
     const res = await handleGetRelations(
-      makeRequest(`/api/issues/${issue1Id}/relations`),
-      issue1Id,
+      makeRequest(`/api/issues/${issue1Id}/relations`, { cookie }),
     );
     const data = await res.json();
     assertEquals(data.outgoing.length, 0);

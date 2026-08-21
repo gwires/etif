@@ -19,8 +19,8 @@ function clampInt(val: string | null, def: number, min: number, max: number): nu
   return Math.max(min, Math.min(max, n));
 }
 
-/** GET /api/issues — public list with filtering/pagination */
-export async function handleListIssues(req: Request): Promise<Response> {
+/** GET /api/issues — list with filtering/pagination (auth required) */
+export const handleListIssues = requireAuth(async (req: Request, _ctx: AuthContext) => {
   const url = new URL(req.url);
   const p = url.searchParams;
 
@@ -37,7 +37,7 @@ export async function handleListIssues(req: Request): Promise<Response> {
   });
 
   return json(result);
-}
+});
 
 /** POST /api/issues — create a new issue (auth required) */
 export const handleCreateIssue = requireAuth(async (req: Request, ctx: AuthContext) => {
@@ -60,12 +60,16 @@ export const handleCreateIssue = requireAuth(async (req: Request, ctx: AuthConte
   return json(issue, STATUS_CODE.Created);
 });
 
-/** GET /api/issues/:id — public single issue detail */
-export async function handleGetIssue(req: Request, id: string): Promise<Response> {
+/** GET /api/issues/:id — single issue detail (auth required) */
+export const handleGetIssue = requireAuth(async (req: Request, _ctx: AuthContext) => {
+  const url = new URL(req.url);
+  const parts = url.pathname.split("/");
+  const id = parts[parts.length - 1];
+
   const issue = await getIssue(id);
   if (!issue) return json({ error: "Not found" }, STATUS_CODE.NotFound);
   return json(issue);
-}
+});
 
 /** PATCH /api/issues/:id — update issue fields (auth required) */
 export const handleUpdateIssue = requireAuth(async (req: Request, _ctx: AuthContext) => {

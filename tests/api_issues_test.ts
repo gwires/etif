@@ -79,10 +79,19 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
     assertEquals(res.status, 400);
   });
 
+  it("rejects unauthenticated GET list", async () => {
+    const res = await handleListIssues(makeRequest("/api/issues?limit=10"));
+    assertEquals(res.status, 401);
+  });
+
+  it("rejects unauthenticated GET single", async () => {
+    const res = await handleGetIssue(makeRequest(`/api/issues/${createdIssueId}`));
+    assertEquals(res.status, 401);
+  });
+
   it("gets an issue by id", async () => {
     const res = await handleGetIssue(
-      makeRequest(`/api/issues/${createdIssueId}`),
-      createdIssueId,
+      makeRequest(`/api/issues/${createdIssueId}`, { cookie }),
     );
     assertEquals(res.status, 200);
     const data = await res.json();
@@ -92,7 +101,7 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
 
   it("returns 404 for nonexistent issue", async () => {
     const fakeId = "00000000-0000-0000-0000-000000000000";
-    const res = await handleGetIssue(makeRequest(`/api/issues/${fakeId}`), fakeId);
+    const res = await handleGetIssue(makeRequest(`/api/issues/${fakeId}`, { cookie }));
     assertEquals(res.status, 404);
   });
 
@@ -102,7 +111,7 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
       makeRequest("/api/issues", { method: "POST", body: { title: "_test_issue_2", severity: 5 }, cookie }),
     );
 
-    const res = await handleListIssues(makeRequest("/api/issues?limit=10&offset=0"));
+    const res = await handleListIssues(makeRequest("/api/issues?limit=10&offset=0", { cookie }));
     assertEquals(res.status, 200);
     const data = await res.json();
     assertEquals(Array.isArray(data), true);
@@ -111,7 +120,7 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
   });
 
   it("filters issues by type", async () => {
-    const res = await handleListIssues(makeRequest("/api/issues?type=draft"));
+    const res = await handleListIssues(makeRequest("/api/issues?type=draft", { cookie }));
     assertEquals(res.status, 200);
     const data = await res.json();
     const nonDraft = data.filter((i: Record<string, unknown>) => i.type !== "draft");
@@ -145,7 +154,7 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
   });
 
   it("paginates results", async () => {
-    const res = await handleListIssues(makeRequest("/api/issues?limit=1&offset=0"));
+    const res = await handleListIssues(makeRequest("/api/issues?limit=1&offset=0", { cookie }));
     const data = await res.json();
     assertEquals(data.length <= 1, true);
   });
