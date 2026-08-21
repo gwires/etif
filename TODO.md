@@ -26,7 +26,7 @@
   - [x] 2o: Create migration `014_create_votes.sql`
   - [x] 2p: Ensure PostgreSQL is running, run `dbmate up`, verify all 14 tables and 5 enums
 - [ ] Milestone 3: Auth ([spec](milestones/MILESTONE-003.md))
-  - [ ] 3a: Project scaffold + config (`/api/config.ts`, `/api/deps.ts`, `/api/main.ts`)
+  - [x] 3a: Project scaffold + config (`/api/config.ts`, `/api/deps.ts`, `/api/main.ts`)
   - [ ] 3b: Database connection utility (`/api/db.ts`)
   - [ ] 3c: Captcha system (`/api/auth/captcha.ts`)
   - [ ] 3d: Session management (`/api/auth/session.ts`, `/api/auth/middleware.ts`)
