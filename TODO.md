@@ -65,7 +65,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 11d: Auth pages (signup, login, logout)
   - [ ] 11e: Layout & navigation (`+layout.svelte`, `app.css`)
   - [x] 11f: Capture page (draft creation form)
-  - [ ] 11g: Recent captures feed
+  - [x] 11g: Recent captures feed
   - [ ] 11h: Issue edit page
 - [ ] Milestone 12: Refinery + LLM assist ([spec](milestones/MILESTONE-012.md))
 - [ ] Milestone 13: Tracker frontend ([spec](milestones/MILESTONE-013.md))
