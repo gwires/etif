@@ -65,6 +65,12 @@
 - Build incrementally. Verify each layer before adding the next.
 
 ### Task Tracking Protocol
+
+TODO.md checkbox conventions:
+- `[x]` — done
+- `[ ]` — pending (next up or planned)
+- `[~]` — intentionally deferred/skipped (with reason noted). Not deleted; can be reactivated later.
+
 1. Before starting a milestone, break it into discrete tasks in `TODO.md`.
 2. Present the task list and wait for explicit approval.
 3. Implement one task at a time. After completing each task:
