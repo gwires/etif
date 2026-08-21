@@ -7,4 +7,4 @@ CREATE TABLE captcha_challenges (
 );
 
 -- migrate:down
-DROP TABLE IF EXISTS captcha_challenges;
+DROP TABLE captcha_challenges;

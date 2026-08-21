@@ -10,12 +10,12 @@
 
 ## Milestone 2: DB Migrations v2 ([spec](milestones/MILESTONE-002.md))
 
-- [ ] Delete old migration files from `db/migrations/`
-- [ ] Write `001_create_users.sql` (with display_name, about, avatar_path)
-- [ ] Write `002_create_sessions.sql`
-- [ ] Write `003_create_captcha_challenges.sql`
-- [ ] Write `004_create_captures.sql` (captures, capture_urls, capture_images, capture_regions)
-- [ ] Verify: `dbmate up` on empty DB, all 7 tables created
+- [x] Delete old migration files from `db/migrations/`
+- [x] Write `001_create_users.sql` (with display_name, about, avatar_path)
+- [x] Write `002_create_sessions.sql`
+- [x] Write `003_create_captcha_challenges.sql`
+- [x] Write `004_create_captures.sql` (captures, capture_urls, capture_images, capture_regions)
+- [x] Verify: `dbmate up` on empty DB, all 7 tables created
 
 ## Milestone 3: Auth + Profile API ([spec](milestones/MILESTONE-003.md))
 

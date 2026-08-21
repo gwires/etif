@@ -1,4 +1,4 @@
-\restrict DZgOqvoxRfBNZKBBZIcBnRo9aGDEj1WhcygwOrmpb97eCVdp7eOKd49qwSYAu2T
+\restrict CId0lkwrSeFXacOdBrW7ot2X9o0TJYdhlNdwRk0IoOs4MgcyKijdfHcPiVFn6p1
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -87,6 +87,62 @@ CREATE TABLE public.captcha_challenges (
     challenge_data jsonb NOT NULL,
     answer_hash text NOT NULL,
     expires_at timestamp with time zone NOT NULL
+);
+
+
+--
+-- Name: capture_images; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.capture_images (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    capture_id uuid NOT NULL,
+    path text NOT NULL,
+    caption text,
+    sort_order integer DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: capture_regions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.capture_regions (
+    capture_id uuid NOT NULL,
+    s2_cell bigint NOT NULL,
+    label text
+);
+
+
+--
+-- Name: capture_urls; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.capture_urls (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    capture_id uuid NOT NULL,
+    url text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: captures; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.captures (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    title text NOT NULL,
+    status text DEFAULT '***'::text NOT NULL,
+    what text,
+    where_text text,
+    why text,
+    "when" text,
+    notes text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -272,6 +328,30 @@ ALTER TABLE ONLY public.captcha_challenges
 
 
 --
+-- Name: capture_images capture_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.capture_images
+    ADD CONSTRAINT capture_images_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: capture_urls capture_urls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.capture_urls
+    ADD CONSTRAINT capture_urls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: captures captures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.captures
+    ADD CONSTRAINT captures_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: citations citations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -416,6 +496,55 @@ ALTER TABLE ONLY public.votes
 
 
 --
+-- Name: idx_capture_images_capture_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_capture_images_capture_id ON public.capture_images USING btree (capture_id);
+
+
+--
+-- Name: idx_capture_regions_capture_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_capture_regions_capture_id ON public.capture_regions USING btree (capture_id);
+
+
+--
+-- Name: idx_capture_regions_s2_cell; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_capture_regions_s2_cell ON public.capture_regions USING btree (s2_cell);
+
+
+--
+-- Name: idx_capture_urls_capture_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_capture_urls_capture_id ON public.capture_urls USING btree (capture_id);
+
+
+--
+-- Name: idx_captures_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_captures_created_at ON public.captures USING btree (created_at DESC);
+
+
+--
+-- Name: idx_captures_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_captures_status ON public.captures USING btree (status);
+
+
+--
+-- Name: idx_captures_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_captures_user_id ON public.captures USING btree (user_id);
+
+
+--
 -- Name: idx_comments_issue; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -525,6 +654,38 @@ CREATE INDEX idx_sessions_user_id ON public.sessions USING btree (user_id);
 --
 
 CREATE INDEX idx_tags_parent ON public.tags USING btree (parent_tag_id);
+
+
+--
+-- Name: capture_images capture_images_capture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.capture_images
+    ADD CONSTRAINT capture_images_capture_id_fkey FOREIGN KEY (capture_id) REFERENCES public.captures(id) ON DELETE CASCADE;
+
+
+--
+-- Name: capture_regions capture_regions_capture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.capture_regions
+    ADD CONSTRAINT capture_regions_capture_id_fkey FOREIGN KEY (capture_id) REFERENCES public.captures(id) ON DELETE CASCADE;
+
+
+--
+-- Name: capture_urls capture_urls_capture_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.capture_urls
+    ADD CONSTRAINT capture_urls_capture_id_fkey FOREIGN KEY (capture_id) REFERENCES public.captures(id) ON DELETE CASCADE;
+
+
+--
+-- Name: captures captures_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.captures
+    ADD CONSTRAINT captures_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -659,7 +820,7 @@ ALTER TABLE ONLY public.votes
 -- PostgreSQL database dump complete
 --
 
-\unrestrict DZgOqvoxRfBNZKBBZIcBnRo9aGDEj1WhcygwOrmpb97eCVdp7eOKd49qwSYAu2T
+\unrestrict CId0lkwrSeFXacOdBrW7ot2X9o0TJYdhlNdwRk0IoOs4MgcyKijdfHcPiVFn6p1
 
 
 --
