@@ -59,6 +59,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
 - [~] Milestone 8: Image upload ([spec](milestones/MILESTONE-008.md)) — *deferred*
 - [~] Milestone 9: Issue versions ([spec](milestones/MILESTONE-009.md)) — *deferred*
 - [~] Milestone 10: Data dumps ([spec](milestones/MILESTONE-010.md)) — *deferred*
+- [ ] Milestone 10B: Backup & Restore ([spec](milestones/MILESTONE-010B.md))
 - [ ] Milestone 11: Capture frontend ([spec](milestones/MILESTONE-011.md)) — *citation features deferred until M5 lands*
   - [x] 11a: Scaffold + config (SvelteKit skeleton-typescript, adapter-node)
   - [x] 11b: API client (`src/lib/api.ts`)
