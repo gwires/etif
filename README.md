@@ -21,3 +21,13 @@ scripts/run.sh bash -c 'cd capture && pnpm build'         # build → capture/bu
 scripts/run.sh bash -c 'cd capture && pnpm preview'       # preview build
 scripts/run.sh bash -c 'cd capture && pnpm check'         # type check
 ```
+
+## Data Export
+
+Export users and issues to JSON for schema migration or backup:
+
+```bash
+scripts/run.sh deno run --allow-env --allow-net --allow-write export.ts
+```
+
+Produces `export/users.json` (id, username, created_at) and `export/issues.json` (id, title, body, created_at).
