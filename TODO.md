@@ -44,6 +44,6 @@
 - [x] Task 3: Capture form + quick-capture smart field
 - [x] Task 4: Recent captures feed
 - [x] Task 5: Edit page (with image management)
-- [ ] Task 6: URLs view
-- [ ] Task 7: Profile page
-- [ ] Task 8: Verify + fix type errors
+- [x] Task 6: URLs view
+- [x] Task 7: Profile page
+- [x] Task 8: Verify + fix type errors
