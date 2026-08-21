@@ -32,7 +32,7 @@ Minimalism is paramount!
 - Nix flake for dev shell and reproducible builds.
 - PostgreSQL + dbmate for schema management. pg_s2 for S2 geometry.
 - Deno (Oak or bare http/std) for backend API.
-- Svelte (SvelteKit, pnpm) for frontend — but keep it thin.
+- Svelte 5 (SvelteKit, pnpm) for frontend — runes mode enabled via `vite.config.ts`. Use `$state()` for reactive variables, not plain `let`. Keep it thin.
 - No CSS frameworks. Single stylesheet or inline. No preprocessors.
 - No icon libraries. Unicode/text/SVG only.
 

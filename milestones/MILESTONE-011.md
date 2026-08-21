@@ -19,9 +19,9 @@ pnpm install
 
 Use skeleton template (not skeleton-with-tests). TypeScript for type safety but keep types minimal.
 
-### Config (`capture/svelte.config.js`)
-- Adapter: `@sveltejs/adapter-node` (for SSR deployment alongside Deno API)
-- Or `adapter-static` if serving from Deno directly. Prefer adapter-node for now.
+### Config
+- SvelteKit config lives in `vite.config.ts` via the `sveltekit()` plugin — do **not** create a separate `svelte.config.js` (it will be ignored with a warning).
+- Adapter: `@sveltejs/adapter-node` (configured in `vite.config.ts`).
 
 ### Shared Styles (`capture/src/app.css`)
 Single small CSS file. Minimal reset, typography, form styles, card layout. No frameworks. Target < 3KB.
@@ -57,7 +57,7 @@ Single small CSS file. Minimal reset, typography, form styles, card layout. No f
 
 **`src/lib/auth.ts`**
 - Load user from session cookie via GET /api/auth/me
-- Store in Svelte context or store
+- Use Svelte 5 `$state()` runes for reactive state; use stores only for cross-component shared state
 - Provide `user` and `isAuthenticated` throughout app
 - Layout root checks auth, redirects to /login if not authenticated
 
@@ -117,7 +117,7 @@ pnpm dev
 - Server-rendered pages wherever possible (SvelteKit SSR by default).
 - Client JS only for interactive elements (form submission, markdown preview toggle).
 - Single CSS file, no component library, no icon library.
-- No state management libraries. Use Svelte stores or context.
+- No state management libraries. Use `$state()` runes for local reactive state, Svelte stores for shared cross-component state.
 - API calls go through local proxy or direct to backend. Configure API_URL env var.
 - Memory-conscious: `pnpm dev` uses Vite which is lighter than webpack. Don't run both frontend and backend dev servers simultaneously if memory is tight — build frontend and serve statically.
 - Keep total bundle size under 50KB gzipped (excluding images).
