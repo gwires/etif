@@ -2,14 +2,19 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { user, checkAuth } from '$lib/auth';
 
 	let { children } = $props();
 
+	const PUBLIC_ROUTES = ['/login', '/signup'];
+
 	onMount(async () => {
 		const ok = await checkAuth();
-		if (!ok) goto('/login');
+		if (!ok && !PUBLIC_ROUTES.includes($page.url.pathname)) {
+			goto('/login');
+		}
 	});
 </script>
 
