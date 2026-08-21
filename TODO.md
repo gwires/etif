@@ -31,7 +31,7 @@
   - [x] 3b-test: DB integration tests (`tests/db_test.ts`, `tests/helpers.ts`, `scripts/unit-test.sh`)
   - [x] 3c: Captcha system (`/api/auth/captcha.ts`)
   - [x] 3d: Session management (`/api/auth/session.ts`, `/api/auth/middleware.ts`)
-  - [ ] 3e: Local signup (`/api/auth/signup.ts`)
+  - [x] 3e: Local signup (`/api/auth/signup.ts`)
   - [ ] 3f: Local login + logout + me (`/api/auth/login.ts`)
   - [ ] 3g: OIDC flow (`/api/auth/oidc.ts`)
   - [ ] 3h: Router wiring + verification
