@@ -44,3 +44,13 @@
 - Never commit without explicit instruction.
 - Test migrations on empty DB before proceeding.
 - Build incrementally. Verify each layer before adding the next.
+
+### Task Tracking Protocol
+1. Before starting a milestone, break it into discrete tasks in `TODO.md`.
+2. Present the task list and wait for explicit approval.
+3. Implement one task at a time. After completing each task:
+   - Check the box in `TODO.md`.
+   - Stop and report completion.
+   - Wait for user input before proceeding to the next task.
+4. Do not batch tasks. Do not proceed without acknowledgment.
+5. If a task needs refinement mid-implementation, update `TODO.md` and confirm with the user.

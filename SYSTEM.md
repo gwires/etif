@@ -6,6 +6,12 @@ Never commit unless I explicitly told you.
 Never go straight into code modifications, write out a conceptual
 plan first and ask me to approve it before you execute.
 
+Task tracking lives in TODO.md. Before starting any milestone:
+1. Break the milestone into individual tasks in TODO.md.
+2. Present the task list and wait for approval.
+3. Implement one task at a time, check the box when done, then stop and wait for input.
+4. Never batch tasks or proceed without acknowledgment.
+
 Minimalism is paramount:
 - Write the least code possible. Every line must justify its existence.
 - No CSS frameworks, no component libraries, no bundler bloat.
