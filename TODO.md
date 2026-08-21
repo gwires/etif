@@ -48,7 +48,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 4b: Relations CRUD (`/api/relations/`)
   - [x] 4c: Regions (`/api/regions/`)
   - [x] 4c-auth: Wrap existing read endpoints with `requireAuth` (issues list, issues get, relations get)
-  - [ ] 4d: Comments (`/api/comments/`)
+  - [x] 4d: Comments (`/api/comments/`)
   - [ ] 4e: Votes (`/api/votes/`)
   - [ ] 4f: Graph traversal (`/api/graph/`)
   - [ ] 4g: Router setup (`/api/router.ts`)

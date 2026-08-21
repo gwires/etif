@@ -9,6 +9,7 @@ import { handleMe, handleLogout } from "./auth/middleware.ts";
 import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue } from "./issues/handlers.ts";
 import { handleGetRelations, handleCreateRelation, handleUpdateRelation, handleDeleteRelation } from "./relations/handlers.ts";
 import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIssuesByRegion } from "./regions/handlers.ts";
+import { handleListComments, handleCreateComment } from "./comments/handlers.ts";
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -70,6 +71,13 @@ async function handler(req: Request): Promise<Response> {
   }
   if (path === "/api/regions" && method === "GET") {
     return handleFindIssuesByRegion(req);
+  }
+
+  // Comments routes
+  const issueCommentsMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)\/comments$/);
+  if (issueCommentsMatch) {
+    if (method === "GET") return handleListComments(req);
+    if (method === "POST") return handleCreateComment(req);
   }
 
   // Health check
