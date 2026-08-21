@@ -29,7 +29,7 @@
   - [x] 3a: Project scaffold + config (`/api/config.ts`, `/api/deps.ts`, `/api/main.ts`)
   - [x] 3b: Database connection utility (`/api/db.ts`)
   - [x] 3b-test: DB integration tests (`tests/db_test.ts`, `tests/helpers.ts`, `scripts/unit-test.sh`)
-  - [ ] 3c: Captcha system (`/api/auth/captcha.ts`)
+  - [x] 3c: Captcha system (`/api/auth/captcha.ts`)
   - [ ] 3d: Session management (`/api/auth/session.ts`, `/api/auth/middleware.ts`)
   - [ ] 3e: Local signup (`/api/auth/signup.ts`)
   - [ ] 3f: Local login + logout + me (`/api/auth/login.ts`)
