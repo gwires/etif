@@ -32,7 +32,14 @@ interface ListParams {
 const VALID_SORTS = ["created_at", "score", "updated_at"];
 const VALID_ORDERS = ["asc", "desc"];
 
-export async function listIssues(params: ListParams): Promise<IssueRow[]> {
+export interface IssueListResult {
+  issues: IssueRow[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export async function listIssues(params: ListParams): Promise<IssueListResult> {
   const conditions: string[] = [];
   const args: unknown[] = [];
   let idx = 1;
@@ -63,10 +70,18 @@ export async function listIssues(params: ListParams): Promise<IssueRow[]> {
   const sortCol = VALID_SORTS.includes(params.sort ?? "") ? params.sort : "created_at";
   const orderDir = VALID_ORDERS.includes(params.order ?? "") ? params.order : "desc";
 
+  // Count total matching rows for pagination
+  const countSql = `SELECT COUNT(*) AS total FROM issues i ${where}`;
+  const countArgs = [...args];
+  const countRow = await queryOne<{ total: string }>(countSql, countArgs);
+  const total = parseInt(countRow?.total ?? "0", 10);
+
   const sql = `SELECT i.* FROM issues i ${where} ORDER BY i.${sortCol} ${orderDir} LIMIT $${idx++} OFFSET $${idx++}`;
   args.push(params.limit, params.offset);
 
-  return query<IssueRow>(sql, args);
+  const issues = await query<IssueRow>(sql, args);
+
+  return { issues, total, limit: params.limit, offset: params.offset };
 }
 
 export async function getIssue(id: string): Promise<IssueRow | null> {

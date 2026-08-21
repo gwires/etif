@@ -21,8 +21,8 @@
 		loading = true;
 		try {
 			const res = await api.get<IssueListResult>(`/api/issues?type=draft&sort=created_at&order=desc&limit=${limit}&offset=${offset}`);
-			issues = res.issues;
-			total = res.total;
+			issues = res.issues ?? [];
+			total = res.total ?? issues.length;
 		} catch {
 			issues = [];
 		} finally {

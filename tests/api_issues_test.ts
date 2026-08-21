@@ -114,8 +114,8 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
     const res = await handleListIssues(makeRequest("/api/issues?limit=10&offset=0", { cookie }));
     assertEquals(res.status, 200);
     const data = await res.json();
-    assertEquals(Array.isArray(data), true);
-    const testIssues = data.filter((i: Record<string, unknown>) => String(i.title).startsWith("_test_"));
+    assertEquals(Array.isArray(data.issues), true);
+    const testIssues = data.issues.filter((i: Record<string, unknown>) => String(i.title).startsWith("_test_"));
     assertEquals(testIssues.length >= 2, true);
   });
 
@@ -123,7 +123,7 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
     const res = await handleListIssues(makeRequest("/api/issues?type=draft", { cookie }));
     assertEquals(res.status, 200);
     const data = await res.json();
-    const nonDraft = data.filter((i: Record<string, unknown>) => i.type !== "draft");
+    const nonDraft = data.issues.filter((i: Record<string, unknown>) => i.type !== "draft");
     assertEquals(nonDraft.length, 0);
   });
 
@@ -156,6 +156,6 @@ describe("Issues API", { sanitizeOps: false, sanitizeResources: false }, () => {
   it("paginates results", async () => {
     const res = await handleListIssues(makeRequest("/api/issues?limit=1&offset=0", { cookie }));
     const data = await res.json();
-    assertEquals(data.length <= 1, true);
+    assertEquals(data.issues.length <= 1, true);
   });
 });
