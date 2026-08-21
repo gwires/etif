@@ -2,55 +2,90 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { api, type Issue } from '$lib/api';
+	import { api, type CaptureWithImages, type CaptureImage } from '$lib/api';
 
 	let title = $state('');
-	let body = $state('');
-	let severity = $state('');
+	let status = $state('***');
+	let whatText = $state('');
+	let whereText = $state('');
+	let whyText = $state('');
+	let whenText = $state('');
+	let notes = $state('');
 	let error = $state('');
 	let loading = $state(true);
 	let saving = $state(false);
-	let preview = $state(false);
 
-	const issueId = $derived($page.params.id);
+	let existingImages = $state<CaptureImage[]>([]);
+	let newImages = $state<File[]>([]);
+	let dragover = $state(false);
 
-	function renderMarkdown(text: string): string {
-		return text
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-			.replace(/^## (.+)$/gm, '<h2>$1</h2>')
-			.replace(/^# (.+)$/gm, '<h1>$1</h1>')
-			.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-			.replace(/\*(.+?)\*/g, '<em>$1</em>')
-			.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-			.replace(/\n/g, '<br>');
+	const captureId = $derived($page.params.id);
+
+	function imgUrl(path: string): string {
+		const name = path.split('/').pop() ?? '';
+		return `/images/${encodeURIComponent(name)}`;
 	}
 
 	onMount(async () => {
 		try {
-			const issue = await api.get<Issue>(`/api/issues/${issueId}`);
-			title = issue.title;
-			body = issue.body ?? '';
-			severity = issue.severity != null ? String(issue.severity) : '';
+			const res = await api.get<{ capture: CaptureWithImages }>(`/api/captures/${captureId}`);
+			const c = res.capture;
+			title = c.title;
+			status = c.status;
+			whatText = c.what_text ?? '';
+			whereText = c.where_text ?? '';
+			whyText = c.why_text ?? '';
+			whenText = c.when_text ?? '';
+			notes = c.notes ?? '';
+			existingImages = c.images ?? [];
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load issue';
+			error = err instanceof Error ? err.message : 'Failed to load capture';
 		} finally {
 			loading = false;
 		}
 	});
+
+	async function deleteImage(imgId: string) {
+		if (!confirm('Delete this image?')) return;
+		try {
+			await api.del(`/api/captures/${captureId}/images/${imgId}`);
+			existingImages = existingImages.filter((i) => i.id !== imgId);
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to delete image';
+		}
+	}
+
+	function handleDrop(e: DragEvent) {
+		e.preventDefault();
+		dragover = false;
+		const files = Array.from(e.dataTransfer?.files ?? []).filter((f) => f.type.startsWith('image/'));
+		if (files.length) newImages = [...newImages, ...files];
+	}
+
+	function removeNew(idx: number) {
+		newImages = newImages.filter((_, i) => i !== idx);
+	}
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		error = '';
 		saving = true;
 		try {
-			await api.patch(`/api/issues/${issueId}`, {
-				title,
-				body,
-				severity: severity ? Number(severity) : null
-			});
+			const body: Record<string, unknown> = { title, status };
+			body.what_text = whatText.trim() || null;
+			body.where_text = whereText.trim() || null;
+			body.why_text = whyText.trim() || null;
+			body.when_text = whenText.trim() || null;
+			body.notes = notes.trim() || null;
+
+			await api.patch(`/api/captures/${captureId}`, body);
+
+			for (const file of newImages) {
+				const fd = new FormData();
+				fd.append('image', file);
+				await api.upload(`/api/captures/${captureId}/images`, fd);
+			}
+
 			goto('/capture/recent');
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to update';
@@ -71,68 +106,88 @@
 
 	<form onsubmit={handleSubmit}>
 		<label for="title">Title</label>
-		<input id="title" bind:value={title} required placeholder="What's the issue?" />
+		<input id="title" bind:value={title} required placeholder="What is this?" />
 
-		<div class="body-header">
-			<label for="body">Body (markdown)</label>
-			<button type="button" class="toggle-btn" onclick={() => (preview = !preview)}>
-				{preview ? 'Edit' : 'Preview'}
-			</button>
+		<label for="status">Status</label>
+		<select id="status" bind:value={status}>
+			<option value="***">★★★ Urgent</option>
+			<option value="**">★★ Important</option>
+			<option value="*">★ Notable</option>
+			<option value="done">✓ Done</option>
+		</select>
+
+		<div class="form-grid">
+			<label for="what">What</label>
+			<textarea id="what" bind:value={whatText} rows="3" placeholder="What happened?"></textarea>
+
+			<label for="where">Where</label>
+			<textarea id="where" bind:value={whereText} rows="2" placeholder="Location or context"></textarea>
+
+			<label for="why">Why</label>
+			<textarea id="why" bind:value={whyText} rows="2" placeholder="Why does this matter?"></textarea>
+
+			<label for="when">When</label>
+			<textarea id="when" bind:value={whenText} rows="2" placeholder="Timing or deadline"></textarea>
+
+			<label for="notes">Notes</label>
+			<textarea id="notes" bind:value={notes} rows="3" placeholder="Additional notes (markdown)"></textarea>
 		</div>
 
-		{#if preview}
-			<div class="card preview">
-				{@html renderMarkdown(body)}
+		<!-- Existing images -->
+		{#if existingImages.length > 0}
+			<span class="form-label">Existing images ({existingImages.length})</span>
+			<div class="img-grid">
+				{#each existingImages as img}
+					<div class="img-thumb">
+						<img src={imgUrl(img.path)} alt={img.caption ?? ''} />
+						<button type="button" class="img-remove" onclick={() => deleteImage(img.id)}>×</button>
+					</div>
+				{/each}
 			</div>
-		{:else}
-			<textarea
-				id="body"
-				bind:value={body}
-				required
-				minlength="10"
-				rows="8"
-				placeholder="Describe the issue."
-			></textarea>
 		{/if}
 
-		<small>
-			Supports: <code>[text](url)</code> · <code>[video:url]</code> · <code>[location:url]</code> · markdown basics
-		</small>
+		<!-- Add new images -->
+		<span class="form-label" id="add-images-label">Add images ({newImages.length})</span>
+		<button
+			type="button"
+			class="smart-field"
+			class:dragover
+			aria-label="Drop images or click to browse"
+			ondrop={handleDrop}
+			ondragover={(e) => { e.preventDefault(); dragover = true; }}
+			ondragleave={() => (dragover = false)}
+			onclick={() => document.getElementById('img-input')?.click()}
+			style="cursor:pointer"
+		>
+			{#if newImages.length === 0}
+				<span>Drop images here or click to browse</span>
+			{:else}
+				<span>{newImages.length} image{newImages.length > 1 ? 's' : ''} selected</span>
+			{/if}
+		</button>
+		<input id="img-input" type="file" accept="image/*" multiple hidden
+			onchange={(e) => {
+				const files = Array.from((e.target as HTMLInputElement).files ?? []);
+				if (files.length) newImages = [...newImages, ...files];
+				(e.target as HTMLInputElement).value = '';
+			}}
+		/>
 
-		<label for="severity">Severity</label>
-		<select id="severity" bind:value={severity}>
-			<option value="">—</option>
-			<option value="1">1 — Low</option>
-			<option value="2">2 — Minor</option>
-			<option value="3">3 — Moderate</option>
-			<option value="4">4 — High</option>
-			<option value="5">5 — Critical</option>
-		</select>
+		{#if newImages.length > 0}
+			<div class="img-grid">
+				{#each newImages as file, i}
+					<div class="img-thumb">
+						<img src={URL.createObjectURL(file)} alt={file.name} />
+						<button type="button" class="img-remove" onclick={() => removeNew(i)}>×</button>
+					</div>
+				{/each}
+			</div>
+		{/if}
 
 		{#if error}<p class="error">{error}</p>{/if}
 
-		<button type="submit" disabled={saving || !title || body.length < 10}>
+		<button type="submit" disabled={saving || !title.trim()}>
 			{saving ? 'Saving…' : 'Save changes'}
 		</button>
 	</form>
-
-	<section class="citations-section">
-		<h2>Citations</h2>
-		<p class="empty">Citation extraction not yet enabled.</p>
-	</section>
-
-	<section class="upload-section">
-		<h2>Images</h2>
-		<p class="empty">Image upload coming soon.</p>
-	</section>
 {/if}
-
-<style>
-	.body-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; }
-	.toggle-btn { background: none; border: 1px solid #ccc; color: #2563eb; padding: 0.25rem 0.75rem; min-height: auto; font-size: 0.875rem; }
-	.toggle-btn:hover { background: #f0f0f0; }
-	:global(.preview) { min-height: 8rem; }
-	.citations-section, .upload-section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; }
-	.citations-section h2, .upload-section h2 { font-size: 1rem; margin-bottom: 0.5rem; }
-	.empty { color: #888; font-size: 0.875rem; }
-</style>
