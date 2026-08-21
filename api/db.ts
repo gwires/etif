@@ -63,6 +63,11 @@ export async function withTransaction<T>(
   }
 }
 
+/** Close the pool. Call at shutdown or end of tests to release connections. */
+export async function closePool(): Promise<void> {
+  await pool.end();
+}
+
 /** Scoped client for use inside transactions. Same interface as top-level helpers. */
 export class TransactionClient {
   #client: Client;
