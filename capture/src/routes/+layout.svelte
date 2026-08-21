@@ -7,6 +7,7 @@
 	import { user, checkAuth } from '$lib/auth';
 
 	let { children } = $props();
+	let menuOpen = $state(false);
 
 	const PUBLIC_ROUTES = ['/login', '/signup'];
 
@@ -16,6 +17,12 @@
 			goto('/login');
 		}
 	});
+
+	// Close mobile menu on navigation
+	$effect(() => {
+		$page.url.pathname;
+		menuOpen = false;
+	});
 </script>
 
 <svelte:head>
@@ -24,14 +31,22 @@
 
 <div class="container">
 	<nav>
-		<a href="/capture"><strong>Capture</strong></a>
-		<a href="/capture/recent">Recent</a>
-		{#if $user}
-			<span>{$user.username}</span>
-			<form method="POST" action="/logout">
-				<button type="submit">Logout</button>
-			</form>
-		{/if}
+		<div class="nav-brand">
+			<a href="/capture"><strong>Capture</strong></a>
+			<button class="menu-toggle" onclick={() => (menuOpen = !menuOpen)} aria-label="Toggle menu">
+				{menuOpen ? '✕' : '☰'}
+			</button>
+		</div>
+		<div class="nav-links" class:open={menuOpen}>
+			<a href="/capture">New</a>
+			<a href="/capture/recent">Recent</a>
+			{#if $user}
+				<span class="nav-user">{$user.username}</span>
+				<form method="POST" action="/logout">
+					<button type="submit">Logout</button>
+				</form>
+			{/if}
+		</div>
 	</nav>
 	<main>
 		{@render children()}

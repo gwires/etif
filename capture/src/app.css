@@ -3,16 +3,29 @@ html{font-family:system-ui,sans-serif;line-height:1.5;color:#1a1a1a;background:#
 body{min-height:100vh;display:flex;flex-direction:column}
 a{color:#2563eb;text-decoration:none}
 a:hover{text-decoration:underline}
-button,input,select,textarea{font:inherit;border:1px solid #ccc;border-radius:4px;padding:.4rem .6rem}
+button,input,select,textarea{font:inherit;border:1px solid #ccc;border-radius:4px;padding:.5rem .6rem;min-height:2.75rem}
 button{background:#2563eb;color:#fff;border-color:#2563eb;cursor:pointer}
 button:hover{background:#1d4ed8}
 label{display:block;margin-bottom:.25rem;font-weight:500}
 input,textarea,select{width:100%;margin-bottom:.75rem}
 form{max-width:36rem}
 .container{width:100%;max-width:64rem;margin:0 auto;padding:0 1rem}
-nav{display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid #ddd}
-nav a{font-weight:500}
-main{flex:1;padding:2rem 0}
+nav{padding:.75rem 0;border-bottom:1px solid #ddd}
+.nav-brand{display:flex;align-items:center;justify-content:space-between}
+.nav-brand a{font-weight:500;font-size:1.125rem}
+.menu-toggle{display:none;background:none;border:none;color:#1a1a1a;font-size:1.5rem;padding:.25rem;line-height:1}
+.nav-links{display:flex;align-items:center;gap:1rem;margin-top:.5rem}
+.nav-links a{font-weight:500}
+.nav-user{font-size:.875rem;color:#666}
+@media(max-width:640px){
+	.menu-toggle{display:block}
+	.nav-links{display:none;flex-direction:column;align-items:flex-start;gap:.75rem;padding:.75rem 0}
+	.nav-links.open{display:flex}
+	.nav-links form{width:100%}
+	.nav-links button{width:100%;text-align:left}
+}
+main{flex:1;padding:1.5rem 0}
+@media(min-width:641px){main{padding:2rem 0}}
 .card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:1rem;margin-bottom:1rem}
 .error{color:#dc2626;font-size:.875rem;margin-top:.25rem}
 small{color:#666;font-size:.875rem}
