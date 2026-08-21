@@ -43,6 +43,7 @@ Minimalism is paramount!
 - Types only where they prevent real bugs, not for ceremony.
 - No barrel exports, no index files re-exporting everything.
 - Comments explain *why*, not *what*.
+- No `README.md` files in subdirectories. All project documentation lives in the single root `README.md`. Subdirectory-specific docs (build commands, usage notes) go in the appropriate section of the root README. This prevents doc fragmentation.
 - Format all `.nix` files with `nixfmt` before committing.
 
 ## Testing
