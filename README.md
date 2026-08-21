@@ -6,7 +6,9 @@
 nix develop                          # enter dev shell
 scripts/postgres-initial-setup.sh    # start PostgreSQL, create user + database
 dbmate up                            # run migrations
+cd capture && pnpm install && cd ..  # install Capture dependencies
 scripts/capture-dev.sh               # start Capture frontend dev server
+scripts/api-dev.sh                   # start API server (port 8000)
 ```
 
 ## Capture Frontend
