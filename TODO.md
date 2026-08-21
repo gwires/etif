@@ -46,7 +46,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
 - [ ] Milestone 4: Core API ([spec](milestones/MILESTONE-004.md))
   - [x] 4a: Issues CRUD (`/api/issues/`)
   - [x] 4b: Relations CRUD (`/api/relations/`)
-  - [ ] 4c: Regions (`/api/regions/`)
+  - [x] 4c: Regions (`/api/regions/`)
   - [ ] 4d: Comments (`/api/comments/`)
   - [ ] 4e: Votes (`/api/votes/`)
   - [ ] 4f: Graph traversal (`/api/graph/`)

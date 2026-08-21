@@ -8,6 +8,7 @@ import { handleLogin } from "./auth/login.ts";
 import { handleMe, handleLogout } from "./auth/middleware.ts";
 import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue } from "./issues/handlers.ts";
 import { handleGetRelations, handleCreateRelation, handleUpdateRelation, handleDeleteRelation } from "./relations/handlers.ts";
+import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIssuesByRegion } from "./regions/handlers.ts";
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -55,6 +56,20 @@ async function handler(req: Request): Promise<Response> {
   if (relationMatch) {
     if (method === "PATCH") return handleUpdateRelation(req);
     if (method === "DELETE") return handleDeleteRelation(req);
+  }
+
+  // Regions routes
+  const issueRegionsMatch = path.match(/^\/api\/issues\/([0-9a-f-]+)\/regions$/);
+  if (issueRegionsMatch) {
+    if (method === "GET") return handleGetRegions(req);
+    if (method === "POST") return handleCreateRegion(req);
+  }
+  const regionMatch = path.match(/^\/api\/regions\/([0-9a-f-]+)$/);
+  if (regionMatch && method === "DELETE") {
+    return handleDeleteRegion(req);
+  }
+  if (path === "/api/regions" && method === "GET") {
+    return handleFindIssuesByRegion(req);
   }
 
   // Health check
