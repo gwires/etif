@@ -1,166 +1,93 @@
-# Milestone 4: Core API
+# Milestone 4: Captures API
 
 ## Goal
-CRUD endpoints for issues, relations, regions, comments, and votes. Auth middleware from milestone 3 is used to protect write operations.
+CRUD for captures, URL extraction on save, multiple image upload, aggregated URLs view.
 
 ## Prerequisites
-- Milestone 3 complete (auth working, session middleware available)
-- DB tables exist
+- Milestone 3 complete (auth + profile working)
 
 ## Deliverables
 
-### 1. Issues CRUD (`/api/issues/`)
+### 1. Captures CRUD (`/api/captures/`)
 
-**GET /api/issues**
-- Query params: `type`, `status`, `severity`, `tag`, `region` (s2_cell_id), `sort` (created_at, score, updated_at), `order` (asc/desc), `limit` (default 50, max 200), `offset`
-- Returns array of issue objects with tags and region count
-- No auth required (public read)
+**GET /api/captures** — list captures for authenticated user
+- Query params: `status` (filter), `sort` (created_at, updated_at), `order` (asc/desc), `limit`, `offset`
+- Return array of captures with all fields
+- Default sort: created_at DESC
 
-**POST /api/issues** (auth required)
-```json
-{ "title": "...", "body": "markdown with links...", "severity": 3 }
-```
-- Creates issue with `type = draft`, `status = open`
-- Sets `created_by` from session
-- Citation extraction will be added in milestone 5 — for now just store body as-is
-- Returns created issue
+**POST /api/captures** — create capture
+- JSON body: `{ title, status?, what?, where_text?, why?, when?, notes? }`
+- Title required, status defaults to `***`
+- After insert: extract URLs from all markdown fields → populate `capture_urls`
+- Return created capture
 
-**GET /api/issues/:id**
-- Full issue with tags, citations (count only for now), regions, relation counts
-- No auth required
+**GET /api/captures/:id** — single capture
+- Include images and regions in response
+- 404 if not found or not owned by user
 
-**PATCH /api/issues/:id** (auth required)
-- Update title, body, severity, status, type
-- If body changed, citation re-extraction triggers (milestone 5)
-- Updates `updated_at`
-- Returns updated issue
+**PATCH /api/captures/:id** — update capture
+- JSON body: any subset of `{ title, status, what, where_text, why, when, notes }`
+- After update: delete old `capture_urls`, re-extract from all markdown fields
+- Update `updated_at`
+- Return updated capture
 
-### 2. Relations CRUD (`/api/relations/`)
+**DELETE /api/captures/:id** — delete capture
+- Cascade deletes capture_urls, capture_images, capture_regions
+- Delete associated image files from disk
+- Return 204
 
-**GET /api/issues/:id/relations**
-- Returns two arrays: `incoming` (where this issue is target) and `outgoing` (where this issue is source)
-- Each relation includes the other issue's id, title, type, image_path
-- Includes `body` (the markdown explanation)
-- No auth required
+### 2. URL Extraction (`/api/captures/extract_urls.ts`)
 
-**POST /api/issues/:id/relations** (auth required)
-```json
-{ "target_id": "uuid", "relation_type": "causes", "body": "Because burning..." }
-```
-- `source_id` comes from URL param
-- Validates both issues exist
-- Validates relation_type enum
-- Unique constraint violation → 409
-- Returns created relation
+Parse markdown text and extract URLs:
+- `[text](url)` — standard markdown links
+- Bare URLs: `https://...` or `http://...`
+- `<url>` — autolinks
 
-**PATCH /api/relations/:id** (auth required)
-- Update `body` only
-- Returns updated relation
+Deduplicate. Return array of URL strings.
 
-**DELETE /api/relations/:id** (auth required)
-- Returns 204
+Called on create/update across all markdown fields (what, where_text, why, when, notes).
+Delete+re-insert pattern for `capture_urls`.
 
-### 3. Regions (`/api/regions/`)
+### 3. Image Upload (`/api/captures/images.ts`)
 
-**GET /api/issues/:id/regions**
-- Returns array of regions for an issue
-- No auth required
+**POST /api/captures/:id/images** — upload image
+- Auth required, multipart/form-data
+- Validate: max 2MB, jpeg/png/gif/webp
+- Magic bytes validation
+- Generate filename: `{capture_id}-{timestamp}-{seq}.{ext}`
+- Store in `/data/images/`
+- Insert into `capture_images` with next sort_order
+- Optional `caption` field in form data
+- Return created image record
 
-**POST /api/issues/:id/regions** (auth required)
-```json
-{ "s2_cell_id": 12345678, "region_name": "North Sea" }
-```
-- Manual region entry (auto-extraction from location URLs comes in milestone 6)
-- Returns created region
+**DELETE /api/captures/:id/images/:img_id** — delete single image
+- Delete file from disk
+- Delete row from `capture_images`
+- Return 204
 
-**DELETE /api/regions/:id** (auth required)
-- Returns 204
+**Image serving:** reuse static file route pattern.
+**GET /images/:filename** — serve from `/data/images/`, no auth required.
 
-**GET /api/regions?s2_cell_id=...**
-- Find all issues overlapping a given S2 cell
-- Returns issue summaries
-- No auth required
+### 4. Aggregated URLs View
 
-### 4. Comments (`/api/comments/`)
+**GET /api/urls** — all URLs across user's captures
+- Join `capture_urls` with `captures`
+- Return: `{ url, capture_title, capture_status, capture_id, created_at }`
+- Ordered by created_at DESC
+- Pagination: limit/offset
 
-**GET /api/issues/:id/comments**
-- Threaded structure: top-level comments with nested replies
-- Each comment includes user info (username), score, created_at
-- Sort by: created_at (default), score
-- No auth required
-
-**POST /api/issues/:id/comments** (auth required)
-```json
-{ "body": "This is important because...", "parent_comment_id": null }
-```
-- `parent_comment_id` optional — null for top-level comment
-- Validates parent comment belongs to same issue if provided
-- Returns created comment
-
-### 5. Votes (`/api/votes/`)
-
-**POST /api/votes** (auth required)
-```json
-{ "target_type": "issue", "target_id": "uuid", "value": 1 }
-```
-- Upsert: if vote exists with same value, delete it (toggle off). If different value, update. If new, insert.
-- After vote change, update cached `score` on target (issues.score or comments.score)
-- For `issue_version` targets, no cached score column yet — compute on read
-- Returns `{ action: "created"|"updated"|"deleted", new_score }`
-
-### 6. Graph Traversal (`/api/graph/`)
-
-**GET /api/graph?root=<issue_id>&depth=3&direction=outgoing**
-- Recursive CTE traversal of issue_relations
-- `direction`: outgoing (follow source→target), incoming (follow target→source), both
-- `depth`: max traversal depth (default 3, max 10)
-- Returns nodes (issues) and edges (relations) as flat arrays for graph rendering
-- No auth required
-
-### 7. Router Setup (`/api/router.ts`)
-Wire all routes into the Deno HTTP server. Use std/http or Oak router. Apply session middleware globally, check auth per-route where needed.
-
-## Verification
-```bash
-# Create issue (with session cookie from milestone 3)
-curl -X POST localhost:8000/api/issues \
-  -H 'Content-Type: application/json' \
-  -b 'session=...' \
-  -d '{"title":"Test Issue","body":"Some description","severity":3}'
-
-# List issues
-curl localhost:8000/api/issues | jq
-
-# Get specific issue
-curl localhost:8000/api/issues/<id> | jq
-
-# Add relation
-curl -X POST localhost:8000/api/issues/<id1>/relations \
-  -H 'Content-Type: application/json' \
-  -b 'session=...' \
-  -d '{"target_id":"<id2>","relation_type":"causes","body":"Because..."}'
-
-# Vote
-curl -X POST localhost:8000/api/votes \
-  -H 'Content-Type: application/json' \
-  -b 'session=...' \
-  -d '{"target_type":"issue","target_id":"<id>","value":1}'
-
-# Graph
-curl "localhost:8000/api/graph?root=<id>&depth=2" | jq
-```
+### 5. Router wiring
+Wire all capture routes into `main.ts`.
 
 ## Tests
-- `tests/api_issues_test.ts` — CRUD lifecycle, validation errors, auth gating, pagination
-- `tests/api_relations_test.ts` — create/delete relations, cycle prevention, graph integrity
-- `tests/api_comments_test.ts` — threaded comments, parent validation, auth
-- `tests/api_votes_test.ts` — toggle logic, score updates, target type handling
-- `tests/api_graph_test.ts` — traversal depth, direction filtering, empty graphs
+- `tests/captures_test.ts` — CRUD operations, auth required
+- `tests/captures_extract_urls_test.ts` — URL extraction from markdown
+- `tests/captures_extract_urls_prop_test.ts` — PBT: extracted URLs are subset of source text
+- `tests/captures_images_test.ts` — upload, validation, delete cleanup
 
 ## Constraints
-- All list endpoints support pagination (limit/offset).
-- Parameterized queries only. No SQL injection vectors.
-- Write endpoints require valid session. Read endpoints are public.
-- Return proper HTTP status codes: 201 for create, 204 for delete, 400 for validation, 401 for unauthenticated, 404 for not found, 409 for conflicts.
-- Keep handlers thin. Business logic in separate modules, handlers just parse request + call logic + format response.
-- Memory-conscious: no loading full tables into memory. Always paginate or stream.
+- Sequential file processing (memory constraint)
+- URL extraction is synchronous and fast (regex only, no fetching)
+- No URL classification or metadata fetching
+- Images stored as-is, no resizing
+- All endpoints require auth

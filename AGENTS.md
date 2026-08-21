@@ -48,7 +48,7 @@ Minimalism is paramount!
 
 ## Testing
 - Write tests with `@std/testing/bdd` (describe/it) and assertions from `@std/assert`. TAP output is produced by the runner (`deno test --reporter=tap`), not by a library import. There is no `@std/testing/tap` — do not use it.
-- Tests live in `/tests/`, mirroring source structure: `db_test.ts`, `auth_captcha_test.ts`, `citations_extract_test.ts`, etc.
+- Tests live in `/tests/`, mirroring source structure: `db_test.ts`, `auth_captcha_test.ts`, `captures_test.ts`, `captures_extract_urls_test.ts`, etc.
 - Run all tests: `scripts/run.sh bash -c 'scripts/unit-test.sh'`. The test script requires `DATABASE_URL` which is only set inside the nix dev shell — running it outside will fail.
 - Every module with non-trivial logic gets a test file. Pure functions get unit tests; DB-touching code gets integration tests against live PostgreSQL.
 - Property-based tests use `npm:fast-check@3` for pure logic modules where properties are more valuable than examples (extractors, parsers, algorithms). Not for DB or HTTP tests. PBT files use `_prop_test.ts` suffix.
@@ -62,20 +62,17 @@ Minimalism is paramount!
 - **Pool lifecycle:** Call `closePool()` from `api/db.ts` and `closeTestClient()` from `tests/helpers.ts` in test teardown to avoid TCP connection leaks.
 
 ## Architecture
-- Monorepo: `/api` (Deno), `/capture` `/tracker` `/community` `/action` (separate SvelteKit frontends), `/db` (migrations).
-- REST JSON API shared by all frontends. Server-rendered pages where possible.
-- Auth: OIDC + local accounts with custom captcha. Session cookies.
-- Four separate frontends, each with own audience and look/feel:
-  - Capture: quick draft entry + refinery (build first)
-  - Tracker: GitHub-like issue management
-  - Community: Wikipedia talk-page meets HN/SO discussion
-  - Direct Action: actionable items for end users
-- Issues typed as draft/problem/cause/action with hierarchical decomposition.
-- Link extraction from markdown body → citations table (video/article/news/location).
-- Location URLs → coordinates → S2 cells → regions.
-- Issue versions for community refinement and voting.
-- Multi-region via S2 cells. Relations form a directed graph with markdown bodies.
-- All data is public once authenticated. All API endpoints require authentication (session cookie) to prevent scraper/agent abuse. Unauthenticated public web pages may be added later.
+- Monorepo: `/api` (Deno), `/capture` (SvelteKit frontend), `/db` (migrations).
+- REST JSON API. Server-rendered pages where possible.
+- Auth: local accounts with custom captcha. Session cookies. OIDC deferred.
+- Capture-first approach: captures are the primary entity. See `PLAN.md` for full data model.
+- Captures have: title, status (`***`/`**`/`*`/done), what, where_text, why, when, notes (all markdown except title).
+- URL extraction from markdown fields → `capture_urls` table (no classification/metadata).
+- Multiple images per capture via `capture_images` table.
+- Geographic regions via `capture_regions` (S2 cells, schema exists but not auto-populated yet).
+- User profiles: display_name, about, avatar.
+- Previous approach archived in `attic/approach01/`. Do NOT reference archived files for current implementation.
+- All data is public once authenticated. All API endpoints require authentication (session cookie).
 
 ## Workflow
 
