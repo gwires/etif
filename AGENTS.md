@@ -21,6 +21,7 @@
 - Types only where they prevent real bugs, not for ceremony.
 - No barrel exports, no index files re-exporting everything.
 - Comments explain *why*, not *what*.
+- Format all `.nix` files with `nixfmt` before committing.
 
 ## Architecture
 - Monorepo: `/api` (Deno), `/capture` `/tracker` `/community` `/action` (separate SvelteKit frontends), `/db` (migrations).

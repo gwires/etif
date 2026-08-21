@@ -24,4 +24,5 @@ Minimalism is paramount:
 - Deno std > third-party packages where feasible.
 - Server-rendered HTML preferred over client-side hydration.
 - This machine is memory-constrained: no parallel builds, no heavy watchers.
+- Format all `.nix` files with `nixfmt` before committing.
 
