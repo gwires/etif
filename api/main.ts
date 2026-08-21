@@ -10,6 +10,8 @@ import { handleListIssues, handleCreateIssue, handleGetIssue, handleUpdateIssue 
 import { handleGetRelations, handleCreateRelation, handleUpdateRelation, handleDeleteRelation } from "./relations/handlers.ts";
 import { handleGetRegions, handleCreateRegion, handleDeleteRegion, handleFindIssuesByRegion } from "./regions/handlers.ts";
 import { handleListComments, handleCreateComment } from "./comments/handlers.ts";
+import { handleVote } from "./votes/handlers.ts";
+import { handleGraph } from "./graph/handlers.ts";
 
 async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -78,6 +80,16 @@ async function handler(req: Request): Promise<Response> {
   if (issueCommentsMatch) {
     if (method === "GET") return handleListComments(req);
     if (method === "POST") return handleCreateComment(req);
+  }
+
+  // Votes route
+  if (path === "/api/votes" && method === "POST") {
+    return handleVote(req);
+  }
+
+  // Graph route
+  if (path === "/api/graph" && method === "GET") {
+    return handleGraph(req);
   }
 
   // Health check

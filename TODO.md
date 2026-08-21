@@ -51,7 +51,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 4d: Comments (`/api/comments/`)
   - [x] 4e: Votes (`/api/votes/`)
   - [x] 4f: Graph traversal (`/api/graph/`)
-  - [ ] 4g: Router setup (`/api/router.ts`)
+  - [x] 4g: Router setup — wired all routes (issues, relations, regions, comments, votes, graph) into `main.ts`
 - [~] Milestone 5: Link extraction + citations ([spec](milestones/MILESTONE-005.md)) — *deferred, capture works without auto-extraction*
 - [~] Milestone 6: Location extraction ([spec](milestones/MILESTONE-006.md)) — *deferred*
 - [~] Milestone 7: Tags + ontology ([spec](milestones/MILESTONE-007.md)) — *deferred*
