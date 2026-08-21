@@ -32,7 +32,7 @@
   - [x] 3c: Captcha system (`/api/auth/captcha.ts`)
   - [x] 3d: Session management (`/api/auth/session.ts`, `/api/auth/middleware.ts`)
   - [x] 3e: Local signup (`/api/auth/signup.ts`)
-  - [ ] 3f: Local login + logout + me (`/api/auth/login.ts`)
+  - [x] 3f: Local login + logout + me (`/api/auth/login.ts`)
   - [ ] 3g: OIDC flow (`/api/auth/oidc.ts`)
   - [ ] 3h: Router wiring + verification
 - [ ] Milestone 4: Core API ([spec](milestones/MILESTONE-004.md))
