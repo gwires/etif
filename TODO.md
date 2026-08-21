@@ -9,6 +9,22 @@
 ## Milestones 2–16 (not yet broken down)
 
 - [ ] Milestone 2: DB migrations
+  - [x] 2a: Create `/db/dbmate.env` configuration file
+  - [x] 2b: Create migration `001_create_enums.sql`
+  - [x] 2c: Create migration `002_create_users.sql`
+  - [x] 2d: Create migration `003_create_sessions.sql`
+  - [x] 2e: Create migration `004_create_captcha_challenges.sql`
+  - [x] 2f: Create migration `005_create_citations.sql`
+  - [x] 2g: Create migration `006_create_issues.sql`
+  - [x] 2h: Create migration `007_create_issue_versions.sql`
+  - [x] 2i: Create migration `008_create_tags.sql`
+  - [x] 2j: Create migration `009_create_issue_tags.sql`
+  - [x] 2k: Create migration `010_create_issue_regions.sql`
+  - [x] 2l: Create migration `011_create_issue_relations.sql`
+  - [x] 2m: Create migration `012_create_issue_citations.sql`
+  - [x] 2n: Create migration `013_create_comments.sql`
+  - [x] 2o: Create migration `014_create_votes.sql`
+  - [x] 2p: Ensure PostgreSQL is running, run `dbmate up`, verify all 14 tables and 5 enums
 - [ ] Milestone 3: Auth
 - [ ] Milestone 4: Core API
 - [ ] Milestone 5: Link extraction + citations
