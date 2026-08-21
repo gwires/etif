@@ -24,7 +24,7 @@
 - Format all `.nix` files with `nixfmt` before committing.
 
 ## Testing
-- TAP output via `@std/testing/tap`. No other test frameworks.
+- Write tests with `@std/testing/bdd` (describe/it) and assertions from `@std/assert`. TAP output is produced by the runner (`deno test --reporter=tap`), not by a library import. There is no `@std/testing/tap` — do not use it.
 - Tests live in `/tests/`, mirroring source structure: `db_test.ts`, `auth_captcha_test.ts`, `citations_extract_test.ts`, etc.
 - Run all tests: `scripts/unit-test.sh` (must be run inside dev shell).
 - Every module with non-trivial logic gets a test file. Pure functions get unit tests; DB-touching code gets integration tests against live PostgreSQL.
@@ -32,6 +32,11 @@
 - Tests must clean up after themselves. Use `_test_` prefix for any DB side effects, delete in finally blocks.
 - Keep test output minimal: no console.log of data, no dumping rows. Assert silently, report only pass/fail + failure detail.
 - After implementing a task, run `scripts/unit-test.sh` and confirm all green before reporting completion.
+
+### Test Pitfalls
+- **DB pool resource leaks:** Deno's resource sanitizers flag connections opened at module import time (e.g., the pool in `api/db.ts`). DB-touching test suites must disable sanitizers on the describe block: `{ sanitizeOps: false, sanitizeResources: false }`. Each test still cleans up its own side effects via finally blocks.
+- **jsonb columns:** Cannot use `LIKE` directly on jsonb. Cast first: `column::text LIKE '%pattern%'`. Applies to cleanup queries in `tests/helpers.ts`.
+- **Pool lifecycle:** Call `closePool()` from `api/db.ts` and `closeTestClient()` from `tests/helpers.ts` in test teardown to avoid TCP connection leaks.
 
 ## Architecture
 - Monorepo: `/api` (Deno), `/capture` `/tracker` `/community` `/action` (separate SvelteKit frontends), `/db` (migrations).
