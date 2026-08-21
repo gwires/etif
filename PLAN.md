@@ -313,23 +313,52 @@ GET    /api/drafts                     # refinery: list drafts
 /actions?region=<s2>           → geo-filtered actions
 ```
 
+## Data Dumps
+All data available as read-only dumps for transparency and external use.
+
+- **API endpoints**: `GET /api/dump/issues`, `GET /api/dump/citations`, `GET /api/dump/relations`, `GET /api/dump/tags` — return full tables as JSON or JSONL
+- **Periodic full dump**: script generates timestamped archive (JSON + SQL) at `/dumps/YYYY-MM-DD.tar.gz`
+- **Incremental**: optional since-datetime parameter for delta dumps
+- **No auth required**: dumps are public
+- **Formats**: JSON (default), JSONL (streaming-friendly), raw SQL (`pg_dump --data-only`)
+
+## Seed Ontology (side note)
+Initial scaffolding data to bootstrap the issue graph. Format and tooling TBD.
+
+- Collection of markdown documents with YAML frontmatter defining issues, relations, tags, citations
+- Existing frameworks to draw from:
+  - Planetary Boundaries (Rockström et al.)
+  - Capitalism critique / anarcho-communism theory
+  - Cybernetics / systems thinking
+  - IPCC reports / climate science taxonomy
+  - SDGs / UN framework
+- Each `.md` file = one issue seed: frontmatter has type, tags, relations, regions; body = description + links
+- Import script parses frontmatter → creates issues, relations, tags, citations in DB
+- This is a living corpus, not static seed data — evolves alongside user-generated content
+- Open question: how to merge imported ontology with community-refined cards? Version conflicts? Trust scores?
+
 ## Milestones
 
-1. **Flake + dev shell** — nix flake providing all tools
-2. **DB migrations** — all tables, indexes, enums via dbmate
-3. **Auth** — OIDC flow, local signup with captcha, session management
-4. **Core API** — CRUD issues, relations, regions, votes
-5. **Link extraction + citations** — URL parsing, classification, citation storage
-6. **Location extraction** — maps URL → coordinates → S2 cells → regions
-7. **Tags + ontology** — tag CRUD, hierarchical ontology, issue tagging
-8. **Image upload** — card image attachment for issues
-9. **Issue versions** — version snapshots, voting on versions
-10. **Capture frontend** — draft form, recent feed, refinery UI
-11. **Refinery + LLM assist** — promote draft to card, optional LLM suggestion
-12. **Tracker frontend** — issue list, detail page, relational card view, map
-13. **Community frontend** — discussion threads, version voting
-14. **Direct Action frontend** — action card feed with context trails
-15. **Seed data** — climate change hierarchy with example captures and cards
+Detailed specs for each milestone are in `/milestones/MILESTONE-NNN.md`.
+
+| # | Milestone | File | Summary |
+|---|-----------|------|--------|
+| 1 | Flake + dev shell | `MILESTONE-001.md` | Nix flake with deno, pnpm, node, dbmate, postgresql |
+| 2 | DB migrations | `MILESTONE-002.md` | 14 migration files: all tables, enums, indexes with exact SQL |
+| 3 | Auth | `MILESTONE-003.md` | Captcha, local signup/login, OIDC, session cookies |
+| 4 | Core API | `MILESTONE-004.md` | Issues CRUD, relations, regions, comments, votes, graph traversal |
+| 5 | Link extraction + citations | `MILESTONE-005.md` | URL parsing, classification, citation storage from markdown |
+| 6 | Location extraction | `MILESTONE-006.md` | Maps URLs → coordinates → S2 cells → issue_regions |
+| 7 | Tags + ontology | `MILESTONE-007.md` | Hierarchical tags CRUD, issue tagging, filtered queries |
+| 8 | Image upload | `MILESTONE-008.md` | File upload, magic-byte validation, static serving |
+| 9 | Issue versions | `MILESTONE-009.md` | Version snapshots on edit, version voting, history |
+| 10 | Data dumps | `MILESTONE-010.md` | Streaming JSONL endpoints, periodic archive script |
+| 11 | Capture frontend | `MILESTONE-011.md` | SvelteKit app: auth pages, draft form, recent feed |
+| 12 | Refinery + LLM assist | `MILESTONE-012.md` | Promote drafts to cards, optional LLM suggestions |
+| 13 | Tracker frontend | `MILESTONE-013.md` | Issue list, detail, relational card view, map, tag browse |
+| 14 | Community frontend | `MILESTONE-014.md` | Discussion threads, version voting, diffs, HN-style feed |
+| 15 | Direct Action frontend | `MILESTONE-015.md` | Action card feed, context trails, geo-filtering |
+| 16 | Seed ontology import | `MILESTONE-016.md` | Markdown+frontmatter format, import script, initial corpus |
 
 ## Design Principles
 - Server-rendered HTML wherever possible
