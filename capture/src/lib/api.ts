@@ -41,6 +41,11 @@ export interface CaptureWithImages extends Capture {
 	images: CaptureImage[];
 }
 
+export interface CaptureListItem extends Capture {
+	image_count: number;
+	url_count: number;
+}
+
 export interface CaptureUrl {
 	url: string;
 	capture_title: string;

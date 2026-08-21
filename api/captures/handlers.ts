@@ -74,20 +74,23 @@ export const handleListCaptures = requireAuth(async (req: Request, ctx: AuthCont
   const validSorts = ["created_at", "updated_at"];
   const sortCol = validSorts.includes(sort) ? sort : "created_at";
 
-  let sql = "SELECT * FROM captures WHERE user_id = $1";
+  let sql = `SELECT c.*, 
+    (SELECT count(*) FROM capture_images ci WHERE ci.capture_id = c.id) AS image_count,
+    (SELECT count(*) FROM capture_urls cu WHERE cu.capture_id = c.id) AS url_count
+    FROM captures c WHERE c.user_id = $1`;
   const args: unknown[] = [ctx.userId];
   let argIdx = 2;
 
   if (status) {
-    sql += ` AND status = $${argIdx++}`;
+    sql += ` AND c.status = $${argIdx++}`;
     args.push(status);
   }
 
-  sql += ` ORDER BY ${sortCol} ${order} LIMIT $${argIdx++} OFFSET $${argIdx++}`;
+  sql += ` ORDER BY c.${sortCol} ${order} LIMIT $${argIdx++} OFFSET $${argIdx++}`;
   args.push(limit, offset);
 
-  const rows = await query<CaptureRow>(sql, args);
-  return jsonResponse({ captures: rows.map(formatCapture) });
+  const rows = await query<CaptureRow & { image_count: bigint; url_count: bigint }>(sql, args);
+  return jsonResponse({ captures: rows.map((r) => ({ ...formatCapture(r), image_count: Number(r.image_count), url_count: Number(r.url_count) })) });
 });
 
 /** POST /api/captures — create a capture */

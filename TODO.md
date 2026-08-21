@@ -42,7 +42,7 @@
 - [x] Task 1: API client + types (`api.ts`, `auth.ts`)
 - [x] Task 2: Layout + nav + CSS foundation
 - [x] Task 3: Capture form + quick-capture smart field
-- [ ] Task 4: Recent captures feed
+- [x] Task 4: Recent captures feed
 - [ ] Task 5: Edit page (with image management)
 - [ ] Task 6: URLs view
 - [ ] Task 7: Profile page
