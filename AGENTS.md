@@ -2,6 +2,8 @@
 
 **NEVER COMMIT OR OTHERWISE MODIFY GIT UNLESS I EXPLICITLY TELL YOU**
 
+Speak succinctly, skip conversational filler, and output only code diffs rather than rewriting whole files.
+
 ## Principles
 - Minimal code, minimal CSS, minimal dependencies.
 - Platform-native over frameworks. HTML > components. Text > icons.
@@ -58,7 +60,7 @@
 
 ## Workflow
 - Always run tool commands via the dev shell: `scripts/run.sh deno check api/main.ts`. Never call `deno`, `pnpm`, `dbmate` etc. outside the shell.
-- Plan before code. Get approval before implementing.
+- Never go straight into code modifications. Write out a conceptual plan first and get approval before implementing.
 - Output diffs, not full file rewrites.
 - Never commit without explicit instruction.
 - Test migrations on empty DB before proceeding.
