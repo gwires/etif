@@ -1,10 +1,12 @@
 # Everything Fucked — Planetary Issue Tracker
 
 ## Concept
-A website tracking problems on planet Earth. Like a GitHub issue tracker but with:
-1. Multi-region geographic association per issue (S2 geometry)
-2. Issues form a directed network (causes, parent-of, related-to)
-3. Three distinct user perspectives
+A platform tracking problems on planet Earth. Issues form a network with geographic associations. Four separate frontends serve different audiences:
+
+1. **Capture** — quick entry + refinement of issues (build first)
+2. **Tracker** — GitHub-like issue management
+3. **Community** — Wikipedia talk-page meets HN/SO discussion
+4. **Direct Action** — actionable items for end users
 
 ## Tech Stack
 - **Nix flake**: dev shell with deno, pnpm, node, dbmate, postgresql, libpq
@@ -41,6 +43,25 @@ A website tracking problems on planet Earth. Like a GitHub issue tracker but wit
 | answer_hash | text | hashed correct answer |
 | expires_at | timestamptz | short-lived |
 
+### citations
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| url | text NOT NULL | original URL |
+| type | enum(video, article, news, location, other) | classified link type |
+| title | text NULLABLE | extracted or manual |
+| author | text NULLABLE | |
+| published_at | timestamptz NULLABLE | |
+| summary | text NULLABLE | extracted snippet / description |
+| archive_path | text NULLABLE | path to archived copy |
+| created_at | timestamptz | |
+
+### issue_citations
+| Column | Type | Notes |
+|--------|------|-------|
+| issue_id | uuid FK → issues | composite PK (issue_id, citation_id) |
+| citation_id | uuid FK → citations | |
+
 ### tags
 | Column | Type | Notes |
 |--------|------|-------|
@@ -62,13 +83,27 @@ A website tracking problems on planet Earth. Like a GitHub issue tracker but wit
 | title | text NOT NULL | |
 | body | text | markdown description |
 | image_path | text NULLABLE | relative path to card image |
-| type | enum(problem, cause, action) | hierarchy level |
+| type | enum(draft, problem, cause, action) | draft = unrefined capture |
 | status | enum(open, in_progress, resolved, wontfix) | workflow |
 | severity | smallint | 1-5 scale |
 | score | int DEFAULT 0 | cached vote tally |
 | created_by | uuid FK → users | |
 | created_at | timestamptz | |
 | updated_at | timestamptz | |
+
+### issue_versions
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| issue_id | uuid FK → issues | |
+| version | int NOT NULL | monotonically increasing per issue |
+| title | text NOT NULL | snapshot of title at this version |
+| body | text | snapshot of body |
+| image_path | text NULLABLE | |
+| edited_by | uuid FK → users | |
+| created_at | timestamptz | |
+
+Versions allow the community to improve cards and vote on specific versions.
 
 ### issue_regions
 | Column | Type | Notes |
@@ -106,43 +141,59 @@ Unique constraint on (source_id, target_id, relation_type).
 | Column | Type | Notes |
 |--------|------|-------|
 | user_id | uuid FK → users | |
-| target_type | enum(issue, comment) | polymorphic target |
-| target_id | uuid | references issues or comments |
+| target_type | enum(issue, issue_version, comment) | polymorphic target |
+| target_id | uuid | references issues, issue_versions, or comments |
 | value | smallint | +1 or -1 |
 
 Unique constraint on (user_id, target_type, target_id).
 
-## Four Views
+## Four Frontends
 
-### I. Direct Action View (landing page)
-- Shows actionable items (issues where type = 'action')
-- Each action card includes context trail back to root problem
-- Geo-filtered by visitor location / selected region
-- Example chain: Climate Change → Fossil Fuel Funding → Your Bank Funds Oil → **Switch to ethical bank**
-- Minimal UI: card feed with expandable context
+### I. Capture Frontend (build first)
+Quick entry and refinement of issues. Requires auth. Nothing is private.
 
-### II. Pundit View (community)
-- Reddit-style discussion threads on any issue
-- Upvote/downvote on issues and comments
-- Sort: hot / new / top / controversial
-- Tags/flairs on issues
-- Threaded comment tree
+**Draft entry:**
+- Minimal form: markdown textarea with title
+- Paste links freely (videos, articles, news, Google Maps / OSM URLs)
+- On save: backend extracts URLs from markdown body → creates citations → links to issue
+- Location URLs (google.com/maps, openstreetmap.org) → extract coordinates → create S2 cells → issue_regions
+- New issues start as `type = draft`
 
-### III. Tracker View (GitHub-like)
+**Refinery:**
+- Lists all drafts, filterable/sortable
+- Refine a draft into a card: LLM-assisted step that proposes title, short description, image suggestion
+- User reviews/edits the proposal, confirms → issue promoted from draft to problem/cause/action
+- Can also manually fill fields without LLM assistance
+
+**Everything is public:** drafts visible to all, refinement history visible.
+
+### II. Tracker Frontend (build second)
+GitHub-like issue management.
+
 - Filterable issue list (type, status, severity, region, tags)
 - Detail page: body, image card, tags, sub-issue tree, relation graph, map
 - Map view: S2 cells rendered as polygons overlay
-- Graph view: interactive DAG visualization of issue relations
+- Graph/network view: DAG visualization of issue relations
+- Relational card view: centered large card + incoming/outgoing mini-cards fanned left/right
 - Status workflow: open → in_progress → resolved → wontfix
 
-### IV. Relational View (card network)
-- Centered large card for the focal issue (image + title + summary)
-- Incoming relation cards (smaller) fanned on the left
-- Outgoing relation cards (smaller) fanned on the right
-- Each mini-card shows image thumbnail, title, relation type label, relation body excerpt
-- Click any card to navigate to that issue's relational view
-- Keyboard nav: ← → to traverse, enter to focus
-- Visual metaphor: trading card / collectible card layout
+### III. Community Frontend (build later)
+Wikipedia talk-page meets HN/SO/StackOverflow.
+
+- Refined discussion around issues and their versions
+- Upvote/downvote on issue versions (which version is best?)
+- Threaded comments on issues
+- Sort: hot / new / top / controversial
+- Suggest edits → create new version → community votes
+- Tags/flairs on issues
+
+### IV. Direct Action Frontend (build later)
+Actionable items for end users.
+
+- Shows issues where type = 'action'
+- Each action card includes context trail back to root problem
+- Geo-filtered by visitor location / selected region
+- Example: Climate Change → Fossil Fuel Funding → Your Bank Funds Oil → **Switch to ethical bank**
 
 ## Auth Flow
 
@@ -164,6 +215,21 @@ Unique constraint on (user_id, target_type, target_id).
 - Short expiry (5 min), single-use
 - No external services, no JS required to solve
 
+## Link Extraction & Citations
+
+On issue save/update:
+1. Parse markdown body for URLs
+2. For each URL, classify type:
+   - youtube.com, vimeo.com, etc → `video`
+   - google.com/maps, openstreetmap.org → `location` (extract lat/lng)
+   - Known news domains → `news`
+   - Else → `article` (fetch title/description if possible)
+3. Upsert into `citations` table (deduplicate by URL)
+4. Link to issue via `issue_citations`
+5. Location URLs additionally create `issue_regions` entries
+
+Future: archive URLs (save PDF/screenshot/MHTML to `archive_path`).
+
 ## API Endpoints
 
 ```
@@ -174,56 +240,77 @@ POST   /api/auth/oidc/callback
 DELETE /api/auth/session
 
 GET    /api/issues
-POST   /api/issues
+POST   /api/issues                    # creates draft, extracts citations
 GET    /api/issues/:id
-PATCH  /api/issues/:id
+PATCH  /api/issues/:id                # re-extracts citations on body change
+GET    /api/issues/:id/citations
+GET    /api/issues/:id/versions
+POST   /api/issues/:id/refine         # promote draft → card (optionally LLM-assisted)
+
 GET    /api/issues/:id/relations       # incoming + outgoing with bodies
 POST   /api/issues/:id/relations
-PATCH  /api/relations/:id               # edit relation body
+PATCH  /api/relations/:id              # edit relation body
 DELETE /api/relations/:id
 
-GET    /api/tags                         # full ontology tree
+GET    /api/tags                       # full ontology tree
 POST   /api/tags
 DELETE /api/tags/:id
-POST   /api/issues/:id/tags              # attach tag
-DELETE /api/issues/:id/tags/:tag_id      # detach tag
+POST   /api/issues/:id/tags            # attach tag
+DELETE /api/issues/:id/tags/:tag_id     # detach tag
 
-GET    /api/issues/:id/card              # issue + image + adjacent cards (relational view)
+GET    /api/issues/:id/card            # issue + image + adjacent cards (relational view)
 GET    /api/issues/:id/comments
 POST   /api/issues/:id/comments
 POST   /api/votes
 
 GET    /api/regions?s2_cell_id=...
-GET    /api/actions?region=...          # direct action feed
-GET    /api/graph?root=...             # issue network traversal
+GET    /api/actions?region=...         # direct action feed
+GET    /api/graph?root=...            # issue network traversal
+GET    /api/drafts                     # refinery: list drafts
 ```
 
 ## Frontend Routes
 
+### Capture Frontend
 ```
-/                              → redirect to /actions or last-viewed perspective
 /signup                        → local signup form + captcha
 /login                         → login form (local + OIDC buttons)
 /auth/callback                 → OIDC callback handler
 /logout                        → destroy session
 
-/actions                       → Direct Action view (landing)
-/actions?region=<s2>           → geo-filtered actions
-/pundit                        → Pundit view (issue feed, sorted)
-/pundit?sort=hot|new|top       → sorted feeds
-/tracker                       → Tracker view (filterable issue list)
+/capture                       → new issue draft form
+/capture/recent                → recent drafts (public feed)
+/refine                        → refinery: list drafts needing refinement
+/refine/:id                    → refine a specific draft into a card
+/i/:id/edit                    → edit existing issue (re-triggers extraction)
+/i/:id/history                 → version history
+```
+
+### Tracker Frontend
+```
+/tracker                       → filterable issue list
 /tracker?type=&status=&tag=    → filtered list
 /map                           → full-screen map view (S2 overlay)
-
 /i/:id                         → issue detail (tracker-style)
-/i/:id/relational              → Relational card view (centered card + neighbors)
-/i/:id/discuss                 → Pundit discussion thread for this issue
-
-/t/:tag                        → issues filtered by tag (ontology browse)
+/i/:id/relational              → relational card view (centered + fans)
+/t/:tag                        → issues filtered by tag
 /t/:tag/tree                   → ontology subtree explorer
-
-/u/:username                   → user profile (their issues, comments, votes)
+/u/:username                   → user profile
 /settings                      → account settings
+```
+
+### Community Frontend (later)
+```
+/community                     → issue feed sorted by activity
+/community?sort=hot|new|top    → sorted feeds
+/i/:id/discuss                 → discussion thread for issue
+/i/:id/versions                → browse/vote on versions
+```
+
+### Direct Action Frontend (later)
+```
+/actions                       → action card feed
+/actions?region=<s2>           → geo-filtered actions
 ```
 
 ## Milestones
@@ -231,21 +318,25 @@ GET    /api/graph?root=...             # issue network traversal
 1. **Flake + dev shell** — nix flake providing all tools
 2. **DB migrations** — all tables, indexes, enums via dbmate
 3. **Auth** — OIDC flow, local signup with captcha, session management
-4. **Core API** — CRUD issues, relations, regions, comments, votes
-5. **Tags + ontology** — tag CRUD, hierarchical ontology, issue tagging
-6. **Image upload** — card image attachment for issues
-7. **Relation bodies** — markdown descriptions on relations
-8. **Frontend shell** — SvelteKit app with routing, four-view layout
-9. **Direct Action view** — action card feed with context trails
-10. **Pundit view** — discussion threads, voting
-11. **Tracker view** — issue list, detail page, graph/map views
-12. **Relational view** — centered card + incoming/outgoing card fan
-13. **Seed data** — climate change hierarchy with example actions and images
+4. **Core API** — CRUD issues, relations, regions, votes
+5. **Link extraction + citations** — URL parsing, classification, citation storage
+6. **Location extraction** — maps URL → coordinates → S2 cells → regions
+7. **Tags + ontology** — tag CRUD, hierarchical ontology, issue tagging
+8. **Image upload** — card image attachment for issues
+9. **Issue versions** — version snapshots, voting on versions
+10. **Capture frontend** — draft form, recent feed, refinery UI
+11. **Refinery + LLM assist** — promote draft to card, optional LLM suggestion
+12. **Tracker frontend** — issue list, detail page, relational card view, map
+13. **Community frontend** — discussion threads, version voting
+14. **Direct Action frontend** — action card feed with context trails
+15. **Seed data** — climate change hierarchy with example captures and cards
 
 ## Design Principles
 - Server-rendered HTML wherever possible
-- Single small CSS file, no frameworks
+- Single small CSS file per frontend, no frameworks
 - Unicode/text over icon libraries
 - Minimal client-side JS
 - Incremental builds, memory-conscious
 - Deno std preferred over third-party packages
+- Each frontend is a separate SvelteKit app (shared API, independent deploy)
+- Everything is public: no private content, no access control beyond auth for writing

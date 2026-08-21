@@ -23,12 +23,20 @@
 - Comments explain *why*, not *what*.
 
 ## Architecture
-- Monorepo: `/api` (Deno), `/web` (Svelte), `/db` (migrations).
-- REST JSON API. Server-rendered pages where possible.
+- Monorepo: `/api` (Deno), `/capture` `/tracker` `/community` `/action` (separate SvelteKit frontends), `/db` (migrations).
+- REST JSON API shared by all frontends. Server-rendered pages where possible.
 - Auth: OIDC + local accounts with custom captcha. Session cookies.
-- Three views: Direct Action, Pundit (discussion/voting), Tracker (GitHub-like).
-- Issues typed as problem/cause/action with hierarchical decomposition.
-- Multi-region via S2 cells. Relations form a directed graph.
+- Four separate frontends, each with own audience and look/feel:
+  - Capture: quick draft entry + refinery (build first)
+  - Tracker: GitHub-like issue management
+  - Community: Wikipedia talk-page meets HN/SO discussion
+  - Direct Action: actionable items for end users
+- Issues typed as draft/problem/cause/action with hierarchical decomposition.
+- Link extraction from markdown body → citations table (video/article/news/location).
+- Location URLs → coordinates → S2 cells → regions.
+- Issue versions for community refinement and voting.
+- Multi-region via S2 cells. Relations form a directed graph with markdown bodies.
+- Everything is public. No private content.
 
 ## Workflow
 - Plan before code. Get approval before implementing.
