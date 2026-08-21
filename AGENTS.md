@@ -100,3 +100,4 @@ TODO.md checkbox conventions:
    - Wait for user input before proceeding to the next task.
 4. Do not batch tasks. Do not proceed without acknowledgment.
 5. If a task needs refinement mid-implementation, update `TODO.md` and confirm with the user.
+6. After the user says "commit" and the commit is made, review the session for lessons learned (gotchas, tool quirks, patterns not captured in docs). If anything warrants recording, propose specific modifications to relevant `.md` files. Often there will be nothing — only propose when genuinely useful. Do **not** make any changes until the user approves.
