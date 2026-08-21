@@ -50,7 +50,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 4c-auth: Wrap existing read endpoints with `requireAuth` (issues list, issues get, relations get)
   - [x] 4d: Comments (`/api/comments/`)
   - [x] 4e: Votes (`/api/votes/`)
-  - [ ] 4f: Graph traversal (`/api/graph/`)
+  - [x] 4f: Graph traversal (`/api/graph/`)
   - [ ] 4g: Router setup (`/api/router.ts`)
 - [~] Milestone 5: Link extraction + citations ([spec](milestones/MILESTONE-005.md)) — *deferred, capture works without auto-extraction*
 - [~] Milestone 6: Location extraction ([spec](milestones/MILESTONE-006.md)) — *deferred*
