@@ -66,7 +66,7 @@ Minimalism is paramount!
 - REST JSON API. Server-rendered pages where possible.
 - Auth: local accounts with custom captcha. Session cookies. OIDC deferred.
 - Capture-first approach: captures are the primary entity. See `PLAN.md` for full data model.
-- Captures have: title, status (`***`/`**`/`*`/done), what, where_text, why, when, notes (all markdown except title).
+- Captures have: title, status (`***`/`**`/`*`/done), what_text, where_text, why_text, when_text, notes (all markdown except title).
 - URL extraction from markdown fields → `capture_urls` table (no classification/metadata).
 - Multiple images per capture via `capture_images` table.
 - Geographic regions via `capture_regions` (S2 cells, schema exists but not auto-populated yet).

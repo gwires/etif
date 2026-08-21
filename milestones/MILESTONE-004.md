@@ -16,7 +16,7 @@ CRUD for captures, URL extraction on save, multiple image upload, aggregated URL
 - Default sort: created_at DESC
 
 **POST /api/captures** — create capture
-- JSON body: `{ title, status?, what?, where_text?, why?, when?, notes? }`
+- JSON body: `{ title, status?, what_text?, where_text?, why_text?, when_text?, notes? }`
 - Title required, status defaults to `***`
 - After insert: extract URLs from all markdown fields → populate `capture_urls`
 - Return created capture
@@ -26,7 +26,7 @@ CRUD for captures, URL extraction on save, multiple image upload, aggregated URL
 - 404 if not found or not owned by user
 
 **PATCH /api/captures/:id** — update capture
-- JSON body: any subset of `{ title, status, what, where_text, why, when, notes }`
+- JSON body: any subset of `{ title, status, what_text, where_text, why_text, when_text, notes }`
 - After update: delete old `capture_urls`, re-extract from all markdown fields
 - Update `updated_at`
 - Return updated capture
@@ -45,7 +45,7 @@ Parse markdown text and extract URLs:
 
 Deduplicate. Return array of URL strings.
 
-Called on create/update across all markdown fields (what, where_text, why, when, notes).
+Called on create/update across all markdown fields (what_text, where_text, why_text, when_text, notes).
 Delete+re-insert pattern for `capture_urls`.
 
 ### 3. Image Upload (`/api/captures/images.ts`)

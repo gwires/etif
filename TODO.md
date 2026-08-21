@@ -40,7 +40,7 @@
 
 - [ ] Auth pages (reuse/adapt from approach01)
 - [ ] Quick-capture smart field (URL→title, image→attach, text→title)
-- [ ] Capture form (title, status selector, what, where, why, when, notes, images)
+- [ ] Capture form (title, status selector, what_text, where_text, why_text, when_text, notes, images)
 - [ ] Recent captures feed (with status filter)
 - [ ] Edit page (pre-populated form, image management)
 - [ ] URLs view (table of all user's URLs)

@@ -77,10 +77,10 @@ Status is stored as a DB column. Displayed as star prefix on title in UI.
 | user_id | uuid FK → users | |
 | title | text NOT NULL | plain text, no embedded stars |
 | status | text NOT NULL DEFAULT '***' | `***`, `**`, `*`, or empty |
-| what | text NULLABLE | markdown |
+| what_text | text NULLABLE | markdown |
 | where_text | text NULLABLE | markdown, free-text location |
-| why | text NULLABLE | markdown |
-| when | text NULLABLE | markdown, temporal context |
+| why_text | text NULLABLE | markdown |
+| when_text | text NULLABLE | markdown, temporal context |
 | notes | text NULLABLE | markdown |
 | created_at | timestamptz | |
 | updated_at | timestamptz | |
@@ -118,6 +118,7 @@ Multiple images per capture. Future: OCR processing.
 Geographic regions. Kept in schema but not auto-populated yet.
 Future: extract from `where_text`.
 
+
 ## Quick-Capture Smart Field
 
 Single input field on the capture form with smart behavior:
@@ -133,7 +134,7 @@ All frontend orchestration. API receives normal create/update calls.
 ## URL Handling
 
 On capture create/update:
-1. Extract URLs from what, where_text, why, when, notes (markdown links + bare URLs)
+1. Extract URLs from what_text, where_text, why_text, when_text, notes (markdown links + bare URLs)
 2. Delete existing `capture_urls` for that capture
 3. Re-insert fresh set
 4. The quick-capture URL also goes into notes, so it gets picked up naturally

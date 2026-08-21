@@ -4,10 +4,10 @@ CREATE TABLE captures (
   user_id uuid NOT NULL REFERENCES users(id),
   title text NOT NULL,
   status text NOT NULL DEFAULT '***',
-  what text,
+  what_text text,
   where_text text,
-  why text,
-  "when" text,
+  why_text text,
+  when_text text,
   notes text,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
