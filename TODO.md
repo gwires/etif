@@ -33,7 +33,7 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 2n: Create migration `013_create_comments.sql`
   - [x] 2o: Create migration `014_create_votes.sql`
   - [x] 2p: Ensure PostgreSQL is running, run `dbmate up`, verify all 14 tables and 5 enums
-- [ ] Milestone 3: Auth ([spec](milestones/MILESTONE-003.md))
+- [x] Milestone 3: Auth ([spec](milestones/MILESTONE-003.md))
   - [x] 3a: Project scaffold + config (`/api/config.ts`, `/api/deps.ts`, `/api/main.ts`)
   - [x] 3b: Database connection utility (`/api/db.ts`)
   - [x] 3b-test: DB integration tests (`tests/db_test.ts`, `tests/helpers.ts`, `scripts/unit-test.sh`)
@@ -41,8 +41,9 @@ Deferred: 3g (OIDC), M5–M10 (enrichment features). All can be added later with
   - [x] 3d: Session management (`/api/auth/session.ts`, `/api/auth/middleware.ts`)
   - [x] 3e: Local signup (`/api/auth/signup.ts`)
   - [x] 3f: Local login + logout + me (`/api/auth/login.ts`)
-  - [~] 3g: OIDC flow (`/api/auth/oidc.ts`) — *deferred, local auth sufficient for now*
+  - [~] 3g: OIDC flow (`/api/auth/oidc.ts`) — *deferred to M3X*
   - [x] 3h: Router wiring + verification
+- [~] Milestone 3X: Multi-Provider Auth — OAuth + Passkeys ([spec](milestones/MILESTONE-003X.md)) — *deferred, local auth sufficient for capture MVP*
 - [ ] Milestone 4: Core API ([spec](milestones/MILESTONE-004.md))
   - [x] 4a: Issues CRUD (`/api/issues/`)
   - [x] 4b: Relations CRUD (`/api/relations/`)
