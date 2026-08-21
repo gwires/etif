@@ -162,6 +162,10 @@ deno run --allow-read --allow-net scripts/import_seeds.ts
 # Should report all skipped, nothing duplicated
 ```
 
+## Tests
+- `tests/seeds_parse_test.ts` — frontmatter parsing, YAML validation, required field checks, enum validation
+- `tests/seeds_import_test.ts` — idempotent import (create → re-run → no duplicates), relation resolution, tag attachment, dry-run mode
+
 ## Constraints
 - Seed files are version-controlled alongside code. They are source, not data.
 - Import script uses direct DB connection (not API). It's a dev/admin tool.

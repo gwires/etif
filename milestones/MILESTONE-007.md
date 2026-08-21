@@ -108,6 +108,12 @@ curl "localhost:8000/api/issues?tag=climate" | jq
 curl "localhost:8000/api/tags/environment/issues" | jq
 ```
 
+## Tests
+- `tests/tags_test.ts` — CRUD, name validation, parent validation, cascade delete
+- `tests/tags_tree_test.ts` — tree assembly from flat list, nesting correctness
+- `tests/tags_tree_prop_test.ts` — PBT: flatten(nest(flat)) === flat; no cycles; depth ≤ max
+- `tests/api_tags_filter_test.ts` — tag-based issue filtering, multi-tag AND logic, descendant tag search
+
 ## Constraints
 - Tag names are unique globally.
 - Max nesting depth: 10 levels (prevent infinite recursion in tree queries).

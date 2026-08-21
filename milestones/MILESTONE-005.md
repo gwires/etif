@@ -85,6 +85,13 @@ curl localhost:8000/api/issues/<id>/citations | jq
 # Should show 3 citations: 1 news, 1 video, 1 location
 ```
 
+## Tests
+- `tests/citations_extract_test.ts` — markdown link parsing, bare URLs, autolinks, deduplication
+- `tests/citations_extract_prop_test.ts` — PBT: extracted URLs are subset of source text URLs; no duplicates for any input
+- `tests/citations_classify_test.ts` — type classification for video/news/location/article patterns
+- `tests/citations_classify_prop_test.ts` — PBT: classification is deterministic; every URL gets exactly one type
+- `tests/citations_pipeline_test.ts` — full extract→classify→store flow against DB, upsert behavior, re-extraction on update
+
 ## Constraints
 - Sequential URL processing only (memory constraint).
 - HTTP fetches have strict timeouts and size limits.

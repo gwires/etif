@@ -68,6 +68,10 @@ curl -X DELETE localhost:8000/api/issues/<id>/image \
   -b 'session=...'
 ```
 
+## Tests
+- `tests/images_validate_test.ts` — magic byte detection for jpeg/png/gif/webp, rejection of invalid bytes
+- `tests/images_upload_test.ts` — upload flow, size validation, filename sanitization, path traversal prevention, delete cleanup
+
 ## Constraints
 - Max file size: 2MB. Enforce at HTTP level (reject large requests before reading body).
 - No image resizing/transformation. Store as-is. Frontend handles display sizing via CSS.

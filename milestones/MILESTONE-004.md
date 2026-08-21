@@ -150,6 +150,13 @@ curl -X POST localhost:8000/api/votes \
 curl "localhost:8000/api/graph?root=<id>&depth=2" | jq
 ```
 
+## Tests
+- `tests/api_issues_test.ts` — CRUD lifecycle, validation errors, auth gating, pagination
+- `tests/api_relations_test.ts` — create/delete relations, cycle prevention, graph integrity
+- `tests/api_comments_test.ts` — threaded comments, parent validation, auth
+- `tests/api_votes_test.ts` — toggle logic, score updates, target type handling
+- `tests/api_graph_test.ts` — traversal depth, direction filtering, empty graphs
+
 ## Constraints
 - All list endpoints support pagination (limit/offset).
 - Parameterized queries only. No SQL injection vectors.

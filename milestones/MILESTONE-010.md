@@ -112,6 +112,9 @@ curl localhost:8000/api/dumps | jq
 curl -o dump.tar.gz localhost:8000/dumps/2024-01-15.tar.gz
 ```
 
+## Tests
+- `tests/dumps_test.ts` — JSON dump completeness, JSONL streaming format, incremental since-filter, pagination
+
 ## Constraints
 - Streaming is mandatory for JSONL format. Never buffer entire table.
 - Batch size for streaming: 1000 rows. Adjust if memory pressure observed.

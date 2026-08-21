@@ -92,6 +92,13 @@ curl localhost:8000/api/issues/<id>/regions | jq
 curl "localhost:8000/api/regions?s2_cell_id=<computed_cell_id>" | jq
 ```
 
+## Tests
+- `tests/regions_coords_test.ts` — Google Maps and OSM URL parsing, edge cases, malformed URLs
+- `tests/regions_coords_prop_test.ts` — PBT: round-trip format→parse→format; valid map URLs yield ≥1 coord; invalid URLs return empty array
+- `tests/regions_s2_test.ts` — cell ID computation for known lat/lng pairs
+- `tests/regions_s2_prop_test.ts` — PBT: deterministic output; nearby points share parent cells at lower levels; output always positive int64
+- `tests/regions_pipeline_test.ts` — location citation → coordinate extraction → S2 → issue_regions insert, deduplication
+
 ## Constraints
 - S2 computation must be pure TypeScript, no native bindings (for portability).
 - If implementing S2 from scratch, keep it minimal: only need `latLngToCellId(lat, lng, level)`. No area calculations, no polygon covering, no neighbor queries.

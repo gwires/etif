@@ -84,6 +84,10 @@ curl -X POST localhost:8000/api/votes \
   -d '{"target_type":"issue_version","target_id":"<version-id>","value":1}'
 ```
 
+## Tests
+- `tests/versions_test.ts` — auto-version on PATCH, explicit version creation, version history ordering, initial version on create
+- `tests/versions_prop_test.ts` — PBT: version numbers strictly increasing per issue; no gaps after sequential creates
+
 ## Constraints
 - Versions are immutable once created. Never update a version row.
 - Version numbers are monotonically increasing per issue (no gaps guaranteed, but no reuse).

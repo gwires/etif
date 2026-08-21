@@ -23,6 +23,16 @@
 - Comments explain *why*, not *what*.
 - Format all `.nix` files with `nixfmt` before committing.
 
+## Testing
+- TAP output via `@std/testing/tap`. No other test frameworks.
+- Tests live in `/tests/`, mirroring source structure: `db_test.ts`, `auth_captcha_test.ts`, `citations_extract_test.ts`, etc.
+- Run all tests: `scripts/unit-test.sh` (must be run inside dev shell).
+- Every module with non-trivial logic gets a test file. Pure functions get unit tests; DB-touching code gets integration tests against live PostgreSQL.
+- Property-based tests use `npm:fast-check@3` for pure logic modules where properties are more valuable than examples (extractors, parsers, algorithms). Not for DB or HTTP tests. PBT files use `_prop_test.ts` suffix.
+- Tests must clean up after themselves. Use `_test_` prefix for any DB side effects, delete in finally blocks.
+- Keep test output minimal: no console.log of data, no dumping rows. Assert silently, report only pass/fail + failure detail.
+- After implementing a task, run `scripts/unit-test.sh` and confirm all green before reporting completion.
+
 ## Architecture
 - Monorepo: `/api` (Deno), `/capture` `/tracker` `/community` `/action` (separate SvelteKit frontends), `/db` (migrations).
 - REST JSON API shared by all frontends. Server-rendered pages where possible.
@@ -52,6 +62,7 @@
 2. Present the task list and wait for explicit approval.
 3. Implement one task at a time. After completing each task:
    - Check the box in `TODO.md`.
+   - Run `scripts/unit-test.sh` and confirm all tests pass.
    - Stop and report completion.
    - Wait for user input before proceeding to the next task.
 4. Do not batch tasks. Do not proceed without acknowledgment.

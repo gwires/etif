@@ -137,6 +137,13 @@ curl localhost:8000/api/auth/me -b 'session=...'
 curl -X DELETE localhost:8000/api/auth/logout -b 'session=...'
 ```
 
+## Tests
+- `tests/db_test.ts` — query, queryOne, execute, withTransaction helpers (already created)
+- `tests/auth_captcha_test.ts` — challenge generation, answer verification, expiry, single-use deletion
+- `tests/auth_session_test.ts` — session creation, cookie round-trip, expiry, logout invalidation
+- `tests/auth_signup_test.ts` — signup flow end-to-end, validation errors, duplicate username, captcha integration
+- `tests/auth_login_test.ts` — login flow, wrong password, nonexistent user
+
 ## Constraints
 - No third-party auth libraries. Use Deno std crypto only.
 - Password hashing: use bcrypt via Deno std or a minimal implementation. If bcrypt is too heavy, use argon2id via WASM or scrypt. Document choice.
