@@ -44,7 +44,7 @@
 		error = '';
 		try {
 			const fd = new FormData();
-			fd.append('file', input.files[0]);
+			fd.append('avatar', input.files[0]);
 			const res = await api.upload<{ avatar_path: string }>('/api/auth/avatar', fd);
 			avatarPath = res.avatar_path;
 			await checkAuth();

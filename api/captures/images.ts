@@ -102,7 +102,7 @@ export const handleUploadImage = requireAuth(async (req: Request, ctx: AuthConte
   }>(
     `INSERT INTO capture_images (capture_id, path, caption, sort_order)
      VALUES ($1, $2, $3, $4) RETURNING *`,
-    [captureId, filepath, caption, seq],
+    [captureId, filename, caption, seq],
   );
 
   return jsonResponse({
@@ -136,7 +136,7 @@ export const handleDeleteImage = requireAuth(async (req: Request, ctx: AuthConte
   if (!image) return errorResponse("Image not found", STATUS_CODE.NotFound);
 
   try {
-    await Deno.remove(image.path);
+    await Deno.remove(`${config.imageDir}/${image.path}`);
   } catch { /* already gone */ }
 
   await execute("DELETE FROM capture_images WHERE id = $1", [imgId]);

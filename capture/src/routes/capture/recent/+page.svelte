@@ -6,15 +6,15 @@
 	let loading = $state(true);
 	let offset = $state(0);
 	let total = $state(0);
-	let statusFilter = $state('');
+	let statusFilter = $state('all');
 	const limit = 20;
 
 	const statuses = [
-		{ value: '', label: 'All' },
-		{ value: '***', label: '★★★' },
-		{ value: '**', label: '★★' },
-		{ value: '*', label: '★' },
-		{ value: 'done', label: 'Done' }
+		{ value: 'all', label: 'All' },
+		{ value: '***', label: 'Draft' },
+		{ value: '**', label: 'In progress' },
+		{ value: '', label: 'Done' },
+		{ value: '*', label: 'Needs revision' }
 	];
 
 	function excerpt(text: string | null, len = 150): string {
@@ -30,13 +30,15 @@
 		if (s === '***') return 'status-3';
 		if (s === '**') return 'status-2';
 		if (s === '*') return 'status-1';
-		return 'status-done';
+		if (s === '') return 'status-done';
+		return '';
 	}
 
 	async function load() {
 		loading = true;
 		try {
-			const params = `sort=created_at&order=desc&limit=${limit}&offset=${offset}${statusFilter ? `&status=${encodeURIComponent(statusFilter)}` : ''}`;
+			const filterParam = statusFilter === 'all' ? '' : `&status=${encodeURIComponent(statusFilter)}`;
+			const params = `sort=created_at&order=desc&limit=${limit}&offset=${offset}${filterParam}`;
 			const res = await api.get<{ captures: CaptureListItem[] }>(`/api/captures?${params}`);
 			captures = res.captures ?? [];
 			total = captures.length < limit ? offset + captures.length : offset + limit + 1;

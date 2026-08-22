@@ -233,7 +233,7 @@ export const handleDeleteCapture = requireAuth(async (req: Request, ctx: AuthCon
   // Clean up image files
   for (const img of images) {
     try {
-      await Deno.remove(img.path);
+      await Deno.remove(`${config.imageDir}/${img.path}`);
     } catch { /* file may already be gone */ }
   }
 

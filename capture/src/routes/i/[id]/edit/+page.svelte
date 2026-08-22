@@ -55,6 +55,16 @@
 		}
 	}
 
+	async function handleDeleteCapture() {
+		if (!confirm('Delete this capture permanently?')) return;
+		try {
+			await api.del(`/api/captures/${captureId}`);
+			goto('/capture/recent');
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to delete';
+		}
+	}
+
 	function handleDrop(e: DragEvent) {
 		e.preventDefault();
 		dragover = false;
@@ -110,10 +120,10 @@
 
 		<label for="status">Status</label>
 		<select id="status" bind:value={status}>
-			<option value="***">★★★ Urgent</option>
-			<option value="**">★★ Important</option>
-			<option value="*">★ Notable</option>
-			<option value="done">✓ Done</option>
+			<option value="***">Draft</option>
+			<option value="**">In progress</option>
+			<option value="">Done</option>
+			<option value="*">Needs revision</option>
 		</select>
 
 		<div class="form-grid">
@@ -150,7 +160,7 @@
 		<span class="form-label" id="add-images-label">Add images ({newImages.length})</span>
 		<button
 			type="button"
-			class="smart-field"
+			class="image-drop"
 			class:dragover
 			aria-label="Drop images or click to browse"
 			ondrop={handleDrop}
@@ -186,8 +196,11 @@
 
 		{#if error}<p class="error">{error}</p>{/if}
 
-		<button type="submit" disabled={saving || !title.trim()}>
-			{saving ? 'Saving…' : 'Save changes'}
-		</button>
+		<div class="form-actions">
+			<button type="submit" disabled={saving || !title.trim()}>
+				{saving ? 'Saving…' : 'Save changes'}
+			</button>
+			<button type="button" class="btn-danger" onclick={handleDeleteCapture} disabled={saving}>Delete capture</button>
+		</div>
 	</form>
 {/if}

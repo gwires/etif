@@ -126,16 +126,53 @@
 	/>
 </div>
 
+<!-- Image upload area -->
+<label for="img-input">Images ({images.length})</label>
+<button
+	type="button"
+	class="image-drop"
+	class:dragover
+	aria-label="Drop images or click to browse"
+	ondrop={handleDrop}
+	ondragover={(e) => { e.preventDefault(); dragover = true; }}
+	ondragleave={() => (dragover = false)}
+	onclick={() => document.getElementById('img-input')?.click()}
+>
+	{#if images.length === 0}
+		<span>Drop images here or click to browse</span>
+	{:else}
+		<span>{images.length} image{images.length > 1 ? 's' : ''} selected</span>
+	{/if}
+</button>
+<input id="img-input" type="file" accept="image/*" multiple hidden
+	onchange={(e) => {
+		const files = Array.from((e.target as HTMLInputElement).files ?? []);
+		if (files.length) images = [...images, ...files];
+		(e.target as HTMLInputElement).value = '';
+	}}
+/>
+
+{#if images.length > 0}
+	<div class="img-grid">
+		{#each images as file, i}
+			<div class="img-thumb">
+				<img src={URL.createObjectURL(file)} alt={file.name} />
+				<button type="button" class="img-remove" onclick={() => removeImage(i)}>×</button>
+			</div>
+		{/each}
+	</div>
+{/if}
+
 <form onsubmit={handleSubmit}>
 	<label for="title-input">Title</label>
 	<input id="title-input" bind:value={title} required placeholder="What is this?" />
 
 	<label for="status">Status</label>
 	<select id="status" bind:value={status}>
-		<option value="***">★★★ Urgent</option>
-		<option value="**">★★ Important</option>
-		<option value="*">★ Notable</option>
-		<option value="done">✓ Done</option>
+		<option value="***">Draft</option>
+		<option value="**">In progress</option>
+		<option value="">Done</option>
+		<option value="*">Needs revision</option>
 	</select>
 
 	<div class="form-grid">
@@ -154,44 +191,6 @@
 		<label for="notes">Notes</label>
 		<textarea id="notes" bind:value={notes} rows="3" placeholder="Additional notes (markdown)"></textarea>
 	</div>
-
-	<!-- Image upload area -->
-	<label for="img-input">Images ({images.length})</label>
-	<button
-		type="button"
-		class="smart-field"
-		class:dragover
-		aria-label="Drop images or click to browse"
-		ondrop={handleDrop}
-		ondragover={(e) => { e.preventDefault(); dragover = true; }}
-		ondragleave={() => (dragover = false)}
-		onclick={() => document.getElementById('img-input')?.click()}
-		style="cursor:pointer"
-	>
-		{#if images.length === 0}
-			<span>Drop images here or click to browse</span>
-		{:else}
-			<span>{images.length} image{images.length > 1 ? 's' : ''} selected</span>
-		{/if}
-	</button>
-	<input id="img-input" type="file" accept="image/*" multiple hidden
-		onchange={(e) => {
-			const files = Array.from((e.target as HTMLInputElement).files ?? []);
-			if (files.length) images = [...images, ...files];
-			(e.target as HTMLInputElement).value = '';
-		}}
-	/>
-
-	{#if images.length > 0}
-		<div class="img-grid">
-			{#each images as file, i}
-				<div class="img-thumb">
-					<img src={URL.createObjectURL(file)} alt={file.name} />
-					<button type="button" class="img-remove" onclick={() => removeImage(i)}>×</button>
-				</div>
-			{/each}
-		</div>
-	{/if}
 
 	{#if error}<p class="error">{error}</p>{/if}
 

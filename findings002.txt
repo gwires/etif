@@ -1,0 +1,35 @@
+# findings
+
+---
+
+- no spacing between images and save capture
+
+---
+
+- status names are incorrect
+ *** means: totally zero effort very drafty
+ ** means: did some work, no longer very drafty, but still needs work
+ `` means: looks done
+ * means: on second thought, i need to edit this again 
+
+so typical workflow is *** -> ** -> '' -> * -> '' -> * -> '' 
+
+---
+
+images dont seem to work properly,
+- deno needs write permission, add this to script
+- pasting an image works, but unclear it happened. move images list to below the 'quick capture' ?
+- 'drop images' blue is kinda weird looking and might be pressed instead of save dont use blue color and not on same line as save
+- uploaded images get a 404 ? maybe vite dev server related problem?
+
+---
+
+there is no way to delete a capture
+
+---
+
+in the profile page, we get 'Missing 'avatar' file field after selecting an avatar
+
+in the console: Failed to load resource: the server responded with a status of 400 (Bad Request)
+for http://localhost:8000/api/auth/avatar
+
